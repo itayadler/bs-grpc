@@ -41,7 +41,7 @@ const preBoilerPlate = `
   let promiseFlatMapArray =
       (f: 'a => Promise.t('b), maxConcurrent, xs: array('a)) =>
     Promise.(
-      make(resolve => {
+      resolved(resolve => {
         let result: array(option('b)) =
           xs |. Array.length |. Belt.Array.make(None);
         let xlen = Array.length(xs);
