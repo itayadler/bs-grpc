@@ -38,40 +38,38 @@ const preBoilerPlate = `
   [@bs.send] external bufferOfByteBuffer : byteBuffer => Node.buffer = "finish";
 
   /* flatMap an array of Promises */
-  let promiseFlatMapArray =
-      (f: 'a => Promise.t('b), maxConcurrent, xs: array('a)) =>
-    Promise.(
-      resolved(resolve => {
-        let result: array(option('b)) =
-          xs |. Array.length |. Belt.Array.make(None);
-        let xlen = Array.length(xs);
-        let numJobs = ref(0);
-        let cursor = ref(0);
-        let rec pump = () => {
-          if (cursor^ == xlen) {
-            if (numJobs^ == 0) {
-              result |> Array.map(Belt.Option.getExn) |. resolve;
-            };
-          } else {
-            let i = cursor^;
-            cursor := cursor^ + 1;
-            numJobs := numJobs^ + 1;
-            xs[i]
-            |. f
-            |. get(x => {
-                 result[i] = Some(x);
-                 numJobs := numJobs^ - 1;
-                 pump();
-               });
-          };
-          ();
-        };
-        for (_ in 1 to min(maxConcurrent, xlen)) {
-          pump();
-        };
-        ();
-      })
-    );
+let promiseFlatMapArray =
+    (f: 'a => Promise.t('b), maxConcurrent, xs: array('a)) => {
+  let (p, resolve) = Promise.pending();
+  let result: array(option('b)) =
+    xs |. Array.length |. Belt.Array.make(None);
+  let xlen = Array.length(xs);
+  let numJobs = ref(0);
+  let cursor = ref(0);
+  let rec pump = () => {
+    if (cursor^ == xlen) {
+      if (numJobs^ == 0) {
+        result |> Array.map(Belt.Option.getExn) |. resolve;
+      };
+    } else {
+      let i = cursor^;
+      cursor := cursor^ + 1;
+      numJobs := numJobs^ + 1;
+      xs[i]
+      |. f
+      |. Promise.get(x => {
+           result[i] = Some(x);
+           numJobs := numJobs^ - 1;
+           pump();
+         });
+    };
+    ();
+  };
+  for (_ in 1 to min(maxConcurrent, xlen)) {
+    pump();
+  };
+  p;
+};
 
   /** return Some(x) for the first x of an array for which predictate f
    returns true, starting from element at index n, or None if no such element is
@@ -133,12 +131,20 @@ const preBoilerPlate = `
     let error = e => Belt.Result.Error(e);
 
     let value = (fieldName, x) =>
+<<<<<<< HEAD
       Field(fieldName, Promise.get(Belt.Result.Ok(x)));
+=======
+      Field(fieldName, Promise.resolved(Belt.Result.Ok(x)));
+>>>>>>> change reason-future to reason-promise
     let fieldValidatorOfMessageValidator = (f, Field(name, promise)) =>
       promise
       |. Promise.flatMapOk(x =>
            switch (x) {
+<<<<<<< HEAD
            | None => None |. Belt.Result.Ok |. Promise.get
+=======
+           | None => None |. Belt.Result.Ok |. Promise.resolved
+>>>>>>> change reason-future to reason-promise
            | Some(thing) =>
              f(thing)
              |. Promise.mapError(str => str |. TransFieldError)
@@ -218,13 +224,21 @@ const preBoilerPlate = `
     (f, Field(fieldName, promise)) => {
       let foo = x =>
         switch (x) {
+<<<<<<< HEAD
         | None => None |. Belt.Result.Ok |. Promise.get
+=======
+        | None => None |. Belt.Result.Ok |. Promise.resolved
+>>>>>>> change reason-future to reason-promise
         | Some(thing) =>
           let bar =
             thing
             |> promiseFlatMapArray(
                  x =>
+<<<<<<< HEAD
                    Field(fieldName, Promise.value(Belt.Result.Ok(Some(x))))
+=======
+                   Field(fieldName, Promise.resolved(Belt.Result.Ok(Some(x))))
+>>>>>>> change reason-future to reason-promise
                    |> f
                    |> fieldGet
                    |. Promise.mapOk(Belt.Option.getExn),
@@ -285,8 +299,13 @@ const preBoilerPlate = `
       | TransFieldError(s) => "involving multiple fields: " ++ s
       | _ => "unknown error";
 
+<<<<<<< HEAD
     let fold = (Field(fieldName, Promise.Promise(get)), happy, sad) =>
       get(x =>
+=======
+    let fold = (Field(fieldName, p), happy, sad) =>
+      Promise.get(p, x =>
+>>>>>>> change reason-future to reason-promise
         switch (x) {
         | Belt.Result.Ok(x) => happy(x)
         | Belt.Result.Error(err) => err |> err2msg |> sad(fieldName)
@@ -974,7 +993,11 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
         if (fieldsToValidate.length == 0) {
           code += `
             /* no validation specified for this message */
+<<<<<<< HEAD
             let validate = x => Promise.get(Belt.Result.Ok(x));
+=======
+            let validate = x => Promise.resolved(Belt.Result.Ok(x));
+>>>>>>> change reason-future to reason-promise
           `
         } else {
           code += `
