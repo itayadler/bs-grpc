@@ -980,7 +980,7 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
           code += `
             /* sanitize, validate, normalize */
             let validate = x =>
-              Promise.make(resolve => {
+              Promise.resolved(resolve => {
             `
           fieldsToValidate.forEach(field =>
             code += `let ${field.name}Ref = ref(x |. ${field.name}Get);\n`
@@ -1208,7 +1208,7 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
             [@bs.send]
             external invoke : (t, ${inputType}, callback) => unit = ${quote(lower1(rpc.name))};
             /** invoke an rpc using promises */
-            let invokePromise = (client, input) => Promise.make(resolve => invoke(client, input, (err, res) => {
+            let invokePromise = (client, input) => Promise.resolved(resolve => invoke(client, input, (err, res) => {
               /* note: isNullable means "is nullish" */
               if (err |. Js.Nullable.isNullable) {
                 /* no error */
