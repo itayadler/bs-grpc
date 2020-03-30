@@ -37,41 +37,39 @@ const preBoilerPlate = `
   type byteBuffer;
   [@bs.send] external bufferOfByteBuffer : byteBuffer => Node.buffer = "finish";
 
-  /* flatMap an array of Futures */
-  let futureFlatMapArray =
-      (f: 'a => Future.t('b), maxConcurrent, xs: array('a)) =>
-    Future.(
-      make(resolve => {
-        let result: array(option('b)) =
-          xs |. Array.length |. Belt.Array.make(None);
-        let xlen = Array.length(xs);
-        let numJobs = ref(0);
-        let cursor = ref(0);
-        let rec pump = () => {
-          if (cursor^ == xlen) {
-            if (numJobs^ == 0) {
-              result |> Array.map(Belt.Option.getExn) |. resolve;
-            };
-          } else {
-            let i = cursor^;
-            cursor := cursor^ + 1;
-            numJobs := numJobs^ + 1;
-            xs[i]
-            |. f
-            |. get(x => {
-                 result[i] = Some(x);
-                 numJobs := numJobs^ - 1;
-                 pump();
-               });
-          };
-          ();
-        };
-        for (_ in 1 to min(maxConcurrent, xlen)) {
-          pump();
-        };
-        ();
-      })
-    );
+  /* flatMap an array of Promises */
+let promiseFlatMapArray =
+    (f: 'a => Promise.t('b), maxConcurrent, xs: array('a)) => {
+  let (p, resolve) = Promise.pending();
+  let result: array(option('b)) =
+    xs |. Array.length |. Belt.Array.make(None);
+  let xlen = Array.length(xs);
+  let numJobs = ref(0);
+  let cursor = ref(0);
+  let rec pump = () => {
+    if (cursor^ == xlen) {
+      if (numJobs^ == 0) {
+        result |> Array.map(Belt.Option.getExn) |. resolve;
+      };
+    } else {
+      let i = cursor^;
+      cursor := cursor^ + 1;
+      numJobs := numJobs^ + 1;
+      xs[i]
+      |. f
+      |. Promise.get(x => {
+           result[i] = Some(x);
+           numJobs := numJobs^ - 1;
+           pump();
+         });
+    };
+    ();
+  };
+  for (_ in 1 to min(maxConcurrent, xlen)) {
+    pump();
+  };
+  p;
+};
 
   /** return Some(x) for the first x of an array for which predictate f
    returns true, starting from element at index n, or None if no such element is
@@ -118,13 +116,11 @@ const preBoilerPlate = `
     );
 
     type field('a) =
-      | Field(string, Future.t(Belt.Result.t(option('a), exn)));
+      | Field(string, Promise.t(Belt.Result.t(option('a), exn)));
     let fieldMap = (f, Field(fieldName, x)) => Field(fieldName, f(x));
     let fieldGet = (Field(_, x)) => x;
-    let futureMap = (a, b) => Future.map(b, a);
-    let futureFlatMap = (a, b) => Future.map(b, a);
+    let promiseMap = (a, b) => Promise.map(b, a);
     let resultMap = (a, b) => Belt.Result.map(b, a);
-    let resultFlatMap = (a, b) => Belt.Result.flatMap(b, a);
     let optionMap = (a, b) => Belt.Option.map(b, a);
     let optionFlatMap = (a, b) => Belt.Option.flatMap(b, a);
     let resultOptionFlatMap = f => fun
@@ -135,49 +131,49 @@ const preBoilerPlate = `
     let error = e => Belt.Result.Error(e);
 
     let value = (fieldName, x) =>
-      Field(fieldName, Future.value(Belt.Result.Ok(x)));
-    let fieldValidatorOfMessageValidator = (f, Field(name, future)) =>
-      future
-      |. Future.flatMapOk(x =>
+      Field(fieldName, Promise.resolved(Belt.Result.Ok(x)));
+    let fieldValidatorOfMessageValidator = (f, Field(name, promise)) =>
+      promise
+      |. Promise.flatMapOk(x =>
            switch (x) {
-           | None => None |. Belt.Result.Ok |. Future.value
+           | None => None |. Belt.Result.Ok |. Promise.resolved
            | Some(thing) =>
              f(thing)
-             |. Future.mapError(str => str |. TransFieldError)
-             |. Future.mapOk(x => Some(x))
+             |. Promise.mapError(str => str |. TransFieldError)
+             |. Promise.mapOk(x => Some(x))
            }
          )
       |. (fresult => Field(name, fresult));
 
 
     let numberRange = (lo, hi) =>
-      fieldMap @@ futureMap @@ resultOptionFlatMap @@ (x => 
+      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x => 
           lo <= x && x <= hi ? okSome(x) : error(NumberOutOfRangeError)
       );
     let maxNumber = numberRange(Js.Int.min);
     let minNumber = n => numberRange(n, Js.Int.max);
     /* TODO can isEqualNumber and isEqualString be merged? */
     let isEqualNumber = n =>
-      fieldMap @@ futureMap @@ resultOptionFlatMap @@ (x =>
+      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
           x == n ?  okSome(x) : error(WrongNumberError)
       );
     let isEqualString = s =>
-      fieldMap @@ futureMap @@ resultOptionFlatMap @@ (x =>
+      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
                                      x == s ? okSome(x) : error(WrongStringError)
       );
     let isInt =
-      fieldMap @@ futureMap @@ resultOptionFlatMap @@ (x =>
+      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
           Js.Math.trunc(x) == x ?
             okSome(x) : error(FractionalNumberError)
       );
     /* TODO can notEqualNumber and notEqualString be merged? */
     let notEqualNumber = n =>
-      fieldMap @@ futureMap @@ resultOptionFlatMap @@ (x =>
+      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
           x != n ?
             okSome(x) : error(WrongNumberError)
       );
     let notEqualString = s =>
-      fieldMap @@ futureMap @@ resultOptionFlatMap @@ (x =>
+      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
           s == x ?
             okSome(x) : error(WrongStringError)
       );
@@ -185,31 +181,31 @@ const preBoilerPlate = `
     [@bs.new] external newRegExp : string => Js.Re.t = "RegExp";
     let matchRegex = re => {
       let re = newRegExp(re);
-      fieldMap @@ futureMap @@ resultOptionFlatMap @@ (x =>
+      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
         x |. Js.Re.test(re) ? okSome(x) : error(RegexMatchError)
       );
     };
     let required = x =>
       x
       |> fieldMap @@
-      futureMap(
+      promiseMap(
         fun
         | Belt.Result.Ok(None) => error(MissingFieldError)
         | x => x,
       );
     let maxStrLen = len =>
-      fieldMap @@ futureMap @@ resultOptionFlatMap @@ (x =>
+      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
           x |. String.length <= len ?
             okSome(x) : error(StringTooLongError)
       );
     let minStrLen = len =>
-      fieldMap @@ futureMap @@ resultOptionFlatMap @@ (x =>
+      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
           x |. String.length >= len ?
             okSome(x) : error(StringTooShortError)
       );
     let nonEmptyString = minStrLen(1);
     let trimString =
-      fieldMap @@ futureMap @@ resultMap @@ optionMap @@ Js.String.trim;
+      fieldMap @@ promiseMap @@ resultMap @@ optionMap @@ Js.String.trim;
 
     /* TODO implement in terms of previous validators */
     let positive = minNumber(1);
@@ -217,24 +213,24 @@ const preBoilerPlate = `
     /* let isUSEIN */
     let repeated:
     (field('a) => field('a), field(array('a))) => field(array('a)) =
-    (f, Field(fieldName, future)) => {
+    (f, Field(fieldName, promise)) => {
       let foo = x =>
         switch (x) {
-        | None => None |. Belt.Result.Ok |. Future.value
+        | None => None |. Belt.Result.Ok |. Promise.resolved
         | Some(thing) =>
           let bar =
             thing
-            |> futureFlatMapArray(
+            |> promiseFlatMapArray(
                  x =>
-                   Field(fieldName, Future.value(Belt.Result.Ok(Some(x))))
+                   Field(fieldName, Promise.resolved(Belt.Result.Ok(Some(x))))
                    |> f
                    |> fieldGet
-                   |. Future.mapOk(Belt.Option.getExn),
+                   |. Promise.mapOk(Belt.Option.getExn),
                  0x7fffffff,
                );
 
           bar
-          |. Future.map(
+          |. Promise.map(
                (x: array(Belt.Result.t('a, exn))) => {
                let firstError = arrayFirst(Belt.Result.isError, 0, x);
                switch (firstError) {
@@ -244,16 +240,16 @@ const preBoilerPlate = `
                  raise(ImpossibleError("found unfound element"))
                };
              })
-          |. Future.mapOk(x => Some(x));
+          |. Promise.mapOk(x => Some(x));
         };
-      let future = Future.flatMapOk(future, foo);
-      Field(fieldName, future);
+      let promise = Promise.flatMapOk(promise, foo);
+      Field(fieldName, promise);
     };
 
     let minItemCount = (len, x: field(array('a))) =>
       x
       |> fieldMap @@
-      futureMap(
+      promiseMap(
         fun
         | Belt.Result.Ok(Some(x)) =>
           x |. Array.length < len ?
@@ -263,7 +259,7 @@ const preBoilerPlate = `
     let maxItemCount = (len, x: field(array('a))) =>
       x
       |> fieldMap @@
-      futureMap(
+      promiseMap(
         fun
         | Belt.Result.Ok(Some(x)) =>
           x |. Array.length > len ?
@@ -287,8 +283,8 @@ const preBoilerPlate = `
       | TransFieldError(s) => "involving multiple fields: " ++ s
       | _ => "unknown error";
 
-    let fold = (Field(fieldName, Future.Future(get)), happy, sad) =>
-      get(x =>
+    let fold = (Field(fieldName, p), happy, sad) =>
+      Promise.get(p, x =>
         switch (x) {
         | Belt.Result.Ok(x) => happy(x)
         | Belt.Result.Error(err) => err |> err2msg |> sad(fieldName)
@@ -976,13 +972,13 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
         if (fieldsToValidate.length == 0) {
           code += `
             /* no validation specified for this message */
-            let validate = x => Future.value(Belt.Result.Ok(x));
+            let validate = x => Promise.resolved(Belt.Result.Ok(x));
           `
         } else {
           code += `
             /* sanitize, validate, normalize */
             let validate = x =>
-              Future.make(resolve => {
+              Promise.resolved(resolve => {
             `
           fieldsToValidate.forEach(field =>
             code += `let ${field.name}Ref = ref(x |. ${field.name}Get);\n`
@@ -1007,7 +1003,7 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
           if (module.t.validation) {
             code += `
                   Validation.fieldMap @@
-                  Validation.futureMap @@
+                  Validation.promiseMap @@
                   Validation.resultOptionFlatMap @@
                   (x => {
                       open Validation;
@@ -1209,8 +1205,8 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
                server is available, or when an error occurs */
             [@bs.send]
             external invoke : (t, ${inputType}, callback) => unit = ${quote(lower1(rpc.name))};
-            /** invoke an rpc using futures */
-            let invokeFuture = (client, input) => Future.make(resolve => invoke(client, input, (err, res) => {
+            /** invoke an rpc using promises */
+            let invokePromise = (client, input) => Promise.resolved(resolve => invoke(client, input, (err, res) => {
               /* note: isNullable means "is nullish" */
               if (err |. Js.Nullable.isNullable) {
                 /* no error */
@@ -1268,7 +1264,7 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
           (call, callback) => {
             let request = call |. ${upper1(resolveRelative(rpc.name, module.moduleName))}Rpc.requestGet;
             ${moduleDirName(resolveRelative(rpc.inputType, module.moduleName))}.validate(request)
-            |. Future.get(x => {
+            |. Promise.get(x => {
                  switch (x) {
                  | Ok(request) => ${lower1(rpc.name)}(call, request, callback)
                  | Error(errMsg) =>

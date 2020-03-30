@@ -27,7 +27,7 @@
     "grpc-tools": "^1.6.6",
     "protobufjs": "6.8.6",
     "read-all-stream": "^3.1.0",
-    "reason-future": "^2.3.1",
+    "reason-promise": "^1.0.2",
     "resolve": "^1.8.1",
     "toposort": "^2.0.2"
   },
