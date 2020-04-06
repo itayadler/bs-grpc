@@ -37,40 +37,6 @@ const preBoilerPlate = `
   type byteBuffer;
   [@bs.send] external bufferOfByteBuffer : byteBuffer => Node.buffer = "finish";
 
-  /* flatMap an array of Promises */
-let promiseFlatMapArray =
-    (f: 'a => Promise.t('b), maxConcurrent, xs: array('a)) => {
-  let (p, resolve) = Promise.pending();
-  let result: array(option('b)) =
-    xs |. Array.length |. Belt.Array.make(None);
-  let xlen = Array.length(xs);
-  let numJobs = ref(0);
-  let cursor = ref(0);
-  let rec pump = () => {
-    if (cursor^ == xlen) {
-      if (numJobs^ == 0) {
-        result |> Array.map(Belt.Option.getExn) |. resolve;
-      };
-    } else {
-      let i = cursor^;
-      cursor := cursor^ + 1;
-      numJobs := numJobs^ + 1;
-      xs[i]
-      |. f
-      |. Promise.get(x => {
-           result[i] = Some(x);
-           numJobs := numJobs^ - 1;
-           pump();
-         });
-    };
-    ();
-  };
-  for (_ in 1 to min(maxConcurrent, xlen)) {
-    pump();
-  };
-  p;
-};
-
   /** return Some(x) for the first x of an array for which predictate f
    returns true, starting from element at index n, or None if no such element is
    found */
@@ -92,205 +58,6 @@ let promiseFlatMapArray =
       Js.Nullable.undefined,
       Js.Nullable.undefined,
     );
-
-  module Validation = {
-    exception MissingFieldError;
-    exception StringTooLongError;
-    exception StringTooShortError;
-    exception ArrayTooShortError;
-    exception FractionalNumberError;
-    exception WrongStringError;
-    exception UnimplementedError;
-    exception WrongNumberError;
-    exception NumberOutOfRangeError;
-    exception NumberNotPositiveError;
-    exception RegexMatchError;
-    exception TransFieldError(string);
-    exception EmptyOneof(string);
-
-    /* invokes user-supplied function to perform multi-field
-     * validation, if such a function is supplied
-     * TODO move to Validation module */
-    let transFieldError = errMsg => Belt.Result.Error(
-      TransFieldError(errMsg)
-    );
-
-    type field('a) =
-      | Field(string, Promise.t(Belt.Result.t(option('a), exn)));
-    let fieldMap = (f, Field(fieldName, x)) => Field(fieldName, f(x));
-    let fieldGet = (Field(_, x)) => x;
-    let promiseMap = (a, b) => Promise.map(b, a);
-    let resultMap = (a, b) => Belt.Result.map(b, a);
-    let optionMap = (a, b) => Belt.Option.map(b, a);
-    let optionFlatMap = (a, b) => Belt.Option.flatMap(b, a);
-    let resultOptionFlatMap = f => fun
-    | Belt.Result.Ok(Some(x)) => f(x)
-    | x => x
-    ;
-    let okSome = x => Belt.Result.Ok(Some(x));
-    let error = e => Belt.Result.Error(e);
-
-    let value = (fieldName, x) =>
-      Field(fieldName, Promise.resolved(Belt.Result.Ok(x)));
-    let fieldValidatorOfMessageValidator = (f, Field(name, promise)) =>
-      promise
-      |. Promise.flatMapOk(x =>
-           switch (x) {
-           | None => None |. Belt.Result.Ok |. Promise.resolved
-           | Some(thing) =>
-             f(thing)
-             |. Promise.mapError(str => str |. TransFieldError)
-             |. Promise.mapOk(x => Some(x))
-           }
-         )
-      |. (fresult => Field(name, fresult));
-
-
-    let numberRange = (lo, hi) =>
-      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x => 
-          lo <= x && x <= hi ? okSome(x) : error(NumberOutOfRangeError)
-      );
-    let maxNumber = numberRange(Js.Int.min);
-    let minNumber = n => numberRange(n, Js.Int.max);
-    /* TODO can isEqualNumber and isEqualString be merged? */
-    let isEqualNumber = n =>
-      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
-          x == n ?  okSome(x) : error(WrongNumberError)
-      );
-    let isEqualString = s =>
-      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
-                                     x == s ? okSome(x) : error(WrongStringError)
-      );
-    let isInt =
-      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
-          Js.Math.trunc(x) == x ?
-            okSome(x) : error(FractionalNumberError)
-      );
-    /* TODO can notEqualNumber and notEqualString be merged? */
-    let notEqualNumber = n =>
-      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
-          x != n ?
-            okSome(x) : error(WrongNumberError)
-      );
-    let notEqualString = s =>
-      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
-          s == x ?
-            okSome(x) : error(WrongStringError)
-      );
-    /* TODO is this in the stdlib? */
-    [@bs.new] external newRegExp : string => Js.Re.t = "RegExp";
-    let matchRegex = re => {
-      let re = newRegExp(re);
-      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
-        x |. Js.Re.test(re) ? okSome(x) : error(RegexMatchError)
-      );
-    };
-    let required = x =>
-      x
-      |> fieldMap @@
-      promiseMap(
-        fun
-        | Belt.Result.Ok(None) => error(MissingFieldError)
-        | x => x,
-      );
-    let maxStrLen = len =>
-      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
-          x |. String.length <= len ?
-            okSome(x) : error(StringTooLongError)
-      );
-    let minStrLen = len =>
-      fieldMap @@ promiseMap @@ resultOptionFlatMap @@ (x =>
-          x |. String.length >= len ?
-            okSome(x) : error(StringTooShortError)
-      );
-    let nonEmptyString = minStrLen(1);
-    let trimString =
-      fieldMap @@ promiseMap @@ resultMap @@ optionMap @@ Js.String.trim;
-
-    /* TODO implement in terms of previous validators */
-    let positive = minNumber(1);
-    /* Is US Employer Identification Numebr? */
-    /* let isUSEIN */
-    let repeated:
-    (field('a) => field('a), field(array('a))) => field(array('a)) =
-    (f, Field(fieldName, promise)) => {
-      let foo = x =>
-        switch (x) {
-        | None => None |. Belt.Result.Ok |. Promise.resolved
-        | Some(thing) =>
-          let bar =
-            thing
-            |> promiseFlatMapArray(
-                 x =>
-                   Field(fieldName, Promise.resolved(Belt.Result.Ok(Some(x))))
-                   |> f
-                   |> fieldGet
-                   |. Promise.mapOk(Belt.Option.getExn),
-                 0x7fffffff,
-               );
-
-          bar
-          |. Promise.map(
-               (x: array(Belt.Result.t('a, exn))) => {
-               let firstError = arrayFirst(Belt.Result.isError, 0, x);
-               switch (firstError) {
-               | Some(Belt.Result.Error(x)) => Belt.Result.Error(x)
-               | None => Belt.Result.Ok(Array.map(Belt.Result.getExn, x))
-               | Some(Belt.Result.Ok(_)) =>
-                 raise(ImpossibleError("found unfound element"))
-               };
-             })
-          |. Promise.mapOk(x => Some(x));
-        };
-      let promise = Promise.flatMapOk(promise, foo);
-      Field(fieldName, promise);
-    };
-
-    let minItemCount = (len, x: field(array('a))) =>
-      x
-      |> fieldMap @@
-      promiseMap(
-        fun
-        | Belt.Result.Ok(Some(x)) =>
-          x |. Array.length < len ?
-            Belt.Result.Error(ArrayTooShortError) : Belt.Result.Ok(Some(x))
-        | x => x,
-      );
-    let maxItemCount = (len, x: field(array('a))) =>
-      x
-      |> fieldMap @@
-      promiseMap(
-        fun
-        | Belt.Result.Ok(Some(x)) =>
-          x |. Array.length > len ?
-            Belt.Result.Error(ArrayTooShortError) : Belt.Result.Ok(Some(x))
-        | x => x,
-      );
-
-    let err2msg =
-      fun
-      | MissingFieldError => "required field missing"
-      | StringTooLongError => "string value too long"
-      | StringTooShortError => "string value too short"
-      | NumberNotPositiveError => "number value non-positive"
-      | ArrayTooShortError => "not enough items"
-      | FractionalNumberError => "number is fractional"
-      | WrongStringError => "string mismatch"
-      | UnimplementedError => "unimplemented validation"
-      | WrongNumberError => "wrong number"
-      | NumberOutOfRangeError => "number ouf ot range"
-      | RegexMatchError => "string pattern mismatch"
-      | TransFieldError(s) => "involving multiple fields: " ++ s
-      | _ => "unknown error";
-
-    let fold = (Field(fieldName, p), happy, sad) =>
-      Promise.get(p, x =>
-        switch (x) {
-        | Belt.Result.Ok(x) => happy(x)
-        | Belt.Result.Error(err) => err |> err2msg |> sad(fieldName)
-        }
-      );
-  };
 
   /** a type that cannot be instantiated */
   type uninstantiable;
@@ -476,25 +243,8 @@ const resolveRelative = (moduleName, scopeName) => {
       return moduleParts.slice(i).join('.')
   throw new Error("how do i name myself?")
 }
-const objMap = (o, f) => { let r = {}; for (let k in o) r[k] = f(o[k], k); return r } // TODO get from a standard lib?
-const objJoin = (o, s) => { let r = '', i = 0; for (let k in o) r += (i ? s + o[k] : o[k]); return r } // TODO get from a standard lib?
 const lower1 = s => s[0].toLowerCase() + s.substr(1)
 const upper1 = s => s[0].toUpperCase() + s.substr(1)
-const firstPart = s => s.split('.')[0]
-/* TODO double-check this work
- * TODO what is this called?
- */
-const sortish = (a, f) => {
-  for (let i = 0; i < a.length; i++) {
-    for (let j = i + 1; j < a.length; j++) {
-      if (f(a[i], a[j]) < 0) {
-        const tmp = a[i]
-        a[i] = a[j]
-        a[j] = tmp
-      }
-    }
-  }
-}
 
 const mapJustType = (fieldProto, scopeName) => {
   switch (fieldProto.type) {
@@ -596,27 +346,6 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
 
   const rootModule = { moduleName: '*root*', modules: {} }
 
-  function handleFieldValidationOptions(field) {
-    if ('options' in field) {
-      const options = field.options
-      if (options !== null && '.tin.fieldValidation' in options) {
-        const validationSource = options['.tin.fieldValidation']
-        return validationSource
-      }
-    }
-  }
-
-  function handleMessageValidationOptions(messageType) {
-    /* check for validation criteria */
-    if ('options' in messageType) {
-      const options = messageType.options
-      if (options !== null && '.tin.messageValidation' in options) {
-        const validationSource = options['.tin.messageValidation']
-        return validationSource
-      }
-    }
-  }
-
   function handleMessageType(parentModule, messageType) {
     /* Create module for this message type */
     const moduleName = dottedModuleName(joinModuleName(parentModule.moduleName, messageType.name))
@@ -632,13 +361,11 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
         typeName: field.typeName,
         label: field.label,
         oneofIndex: field.hasOwnProperty('oneofIndex') ? field.oneofIndex : -1,
-        validation: handleFieldValidationOptions(field)
       })),
       oneofs: messageType.oneofDecl.map(oneof => ({
         name: oneof.name,
         fields: []
       })),
-      validation: handleMessageValidationOptions(messageType),
     }
     messageType.field.forEach((field, iField) => {
       if (field.hasOwnProperty('oneofIndex')) {
@@ -722,16 +449,6 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
     })
   })
 
-  function identifyModules() {
-    const foundModules = {}
-    recurse(rootModule)
-    function recurse(module) {
-      foundModules[module.moduleName] = module;
-      for (let moduleName in module.modules)
-        recurse(module.modules[moduleName])
-    }
-    return foundModules;
-  }
   function identifyModulesArray() {
     const foundModules = []
     recurse(rootModule)
@@ -863,10 +580,6 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
               const enumModuleRef = resolveRelative(mapTypeNameToModuleName(field.typeName), module.moduleName)
               const conv = makeFunNameConvIntOfEnum(enumModuleRef)
               code += `~${lower1(field.name)} =? (`
-              if (field.label == protobufs.google.protobuf.FieldDescriptorProto.Label.LABEL_OPTIONAL)
-                code += `Validation.optionMap`
-              if (field.label == protobufs.google.protobuf.FieldDescriptorProto.Label.LABEL_REPEATED)
-                code += `Validation.optionMap @@ Array.map`
               code += `@@ ${conv}) @@ ${lower1(field.name)},\n`
             } else {
               code += `~${lower1(field.name)}?,\n`
@@ -880,10 +593,6 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
               code += `/* enum converting getter */
                 let ${field.name}Get =
               `
-              if (field.label == protobufs.google.protobuf.FieldDescriptorProto.Label.LABEL_OPTIONAL)
-                code += `Validation.optionMap`
-              if (field.label == protobufs.google.protobuf.FieldDescriptorProto.Label.LABEL_REPEATED)
-                code += `Validation.optionMap @@ Array.map`
               code += `@@ ${conv} << ${field.name}Get;
               `
             }
@@ -965,128 +674,6 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
           );
           `
         })
-        const fieldsToValidate = module.t.fields.filter(field =>
-          field.validation ||
-          field.type == protobufs.google.protobuf.FieldDescriptorProto.Type.TYPE_MESSAGE
-        )
-        if (fieldsToValidate.length == 0) {
-          code += `
-            /* no validation specified for this message */
-            let validate = x => Promise.resolved(Belt.Result.Ok(x));
-          `
-        } else {
-          code += `
-            /* sanitize, validate, normalize */
-            let validate = x =>
-              Promise.resolved(resolve => {
-            `
-          fieldsToValidate.forEach(field =>
-            code += `let ${field.name}Ref = ref(x |. ${field.name}Get);\n`
-          )
-          code += `
-                let n = ref(${fieldsToValidate.length});
-                let failed = ref(false);
-                /* message is valid; build the normalized message */
-                /* TODO makeMessage is probably vestigial at this point
-                let makeMessage = () => {
-                  Belt.Result.Ok(t(
-            `
-          fieldsToValidate.forEach(field =>
-            code += `~${field.name}=?${field.name}Ref^,\n`
-          )
-          code += `
-                  ()))
-                };
-                */
-                let wholeMessageValidation =
-            `
-          if (module.t.validation) {
-            code += `
-                  Validation.fieldMap @@
-                  Validation.promiseMap @@
-                  Validation.resultOptionFlatMap @@
-                  (x => {
-                      open Validation;
-                      ${module.t.validation}
-                    }
-                  );
-              `
-          } else {
-            code += `x => x;`
-          }
-          code += `
-                let fail = (fieldName, errMsg) => {
-                  failed := true;
-                  resolve(
-                    Belt.Result.Error(
-                      {j|error validating field $fieldName: $errMsg|j},
-                    ),
-                  )
-                };
-                let tick = (field, y) => {
-                  if (!failed^) {
-                    field := y;
-                    n := n^ - 1;
-                    if (n^ == 0) {
-                      t(
-            `
-          module.t.fields.forEach(field => {
-            if (fieldsToValidate.indexOf(field) < 0) {
-              code += `~${field.name} =? x |. ${field.name}Get,\n`
-            } else {
-              code += `~${field.name} =? ${field.name}Ref^,\n`
-            }
-          })
-          module.t.oneofs.forEach(oneof => {
-            code += `/* oneof arg */ ~${oneof.name} = `
-            oneof.fields.forEach(field => {
-              if (fieldsToValidate.indexOf(field) < 0) {
-                code += `x |. ${field.name}Get != None ? "${field.name}" :\n`
-              } else {
-                code += `${field.name}Ref^ != None ? "${field.name}" :\n`
-              }
-            })
-            code += `raise(Validation.EmptyOneof(${quote(oneof.name)})),/* oneof arg done */\n`
-          })
-          code += `
-                      ())
-                      |> (x=>Some(x))
-                      |> Validation.value(${quote(lastDottedPart(module.moduleName))})
-                      |> wholeMessageValidation
-                      |> Validation.required
-                      |. Validation.fold(opt => resolve(Belt.Result.Ok(Belt.Option.getExn(opt))), fail);
-                    }
-                  }
-                };
-                open Validation;
-          `
-          module.t.fields.forEach(field => {
-            if (field.validation != null) {
-              code += `/* field validation */
-                ${field.name}Ref^
-                |> value(${quote(field.name)})
-                |> ${field.validation}
-                |. fold(tick(${field.name}Ref), fail)
-                |. ignore;
-              `
-            } else if (field.type == protobufs.google.protobuf.FieldDescriptorProto.Type.TYPE_MESSAGE) {
-              let validationCode =
-                `fieldValidatorOfMessageValidator @@ ${moduleDirName(mapJustType(field, module.moduleName))}.validate`
-              if (field.label == protobufs.google.protobuf.FieldDescriptorProto.Label.LABEL_REPEATED)
-                validationCode = `repeated(${validationCode})`
-              code += `/* message field validation */
-                ${field.name}Ref^
-                |> value(${quote(field.name)})
-                |> ${validationCode}
-                |. fold(tick(${field.name}Ref), fail)
-                |. ignore;
-              `
-            }
-          })
-          code += `
-            });
-          `
-        }
         code += `
            type codec;
 
@@ -1206,17 +793,6 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
             [@bs.send]
             external invoke : (t, ${inputType}, callback) => unit = ${quote(lower1(rpc.name))};
             /** invoke an rpc using promises */
-            let invokePromise = (client, input) => Promise.resolved(resolve => invoke(client, input, (err, res) => {
-              /* note: isNullable means "is nullish" */
-              if (err |. Js.Nullable.isNullable) {
-                /* no error */
-                resolve(Belt.Result.Ok(res))
-              } else {
-                /* error */
-                resolve(Belt.Result.Error(err))
-              }
-            }));
-            /** invoke an rpc using promises */
             let invokePromise = (client, input) => Js.Promise.make((~resolve, ~reject) => {
               invoke(client, input, (err, res) => {
                 switch (err |. Js.Nullable.toOption) {
@@ -1249,7 +825,7 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
           addService(server, myServerServiceHandle, t);
         /** creates an implementation of the ${module.serviceName}. The RPC
          * implementations you pass to this function will only be invoked after
-         * any sanitization/validation/normalization code has processed the
+         * any sanitization/normalization code has processed the
          * message without error. */
         let make = (
       `
@@ -1263,14 +839,7 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
                 ~${lower1(rpc.name)}=
           (call, callback) => {
             let request = call |. ${upper1(resolveRelative(rpc.name, module.moduleName))}Rpc.requestGet;
-            ${moduleDirName(resolveRelative(rpc.inputType, module.moduleName))}.validate(request)
-            |. Promise.get(x => {
-                 switch (x) {
-                 | Ok(request) => ${lower1(rpc.name)}(call, request, callback)
-                 | Error(errMsg) =>
-                   errMsg |. ${lower1(rpc.name)}ErrorHandler |> reply(callback)
-                 };
-               });
+            ${lower1(rpc.name)}(call, request, callback);
           },
         `
       })
