@@ -37,40 +37,6 @@ const preBoilerPlate = `
   type byteBuffer;
   [@bs.send] external bufferOfByteBuffer : byteBuffer => Node.buffer = "finish";
 
-  /* flatMap an array of Promises */
-let promiseFlatMapArray =
-    (f: 'a => Promise.t('b), maxConcurrent, xs: array('a)) => {
-  let (p, resolve) = Promise.pending();
-  let result: array(option('b)) =
-    xs |. Array.length |. Belt.Array.make(None);
-  let xlen = Array.length(xs);
-  let numJobs = ref(0);
-  let cursor = ref(0);
-  let rec pump = () => {
-    if (cursor^ == xlen) {
-      if (numJobs^ == 0) {
-        result |> Array.map(Belt.Option.getExn) |. resolve;
-      };
-    } else {
-      let i = cursor^;
-      cursor := cursor^ + 1;
-      numJobs := numJobs^ + 1;
-      xs[i]
-      |. f
-      |. Promise.get(x => {
-           result[i] = Some(x);
-           numJobs := numJobs^ - 1;
-           pump();
-         });
-    };
-    ();
-  };
-  for (_ in 1 to min(maxConcurrent, xlen)) {
-    pump();
-  };
-  p;
-};
-
   /** return Some(x) for the first x of an array for which predictate f
    returns true, starting from element at index n, or None if no such element is
    found */
@@ -93,6 +59,7 @@ let promiseFlatMapArray =
       Js.Nullable.undefined,
     );
 
+<<<<<<< HEAD
   module Validation = {
     exception MissingFieldError;
     exception StringTooLongError;
@@ -313,6 +280,8 @@ let promiseFlatMapArray =
       );
   };
 
+=======
+>>>>>>> remove Validation
   /** a type that cannot be instantiated */
   type uninstantiable;
   /** a type to only hold values like Js.Nullable.null and
@@ -402,7 +371,7 @@ let makeServerModule = (serviceModules) => {
         server,
         host,
         credentials,
-        (error, port) => {
+        (_error, _port) => {
           ${bindServicesCode}
           start(server);
           ();
@@ -419,7 +388,7 @@ const boilerPlate2 = `
     module Metadata = {
       type t;
       [@bs.module "@grpc/grpc-js"] [@bs.new] external make : unit => t = "Metadata";
-      [@bs.send] external set : (t, string, string) => unit = "";
+      [@bs.send] external set : (t, string, string) => unit = "set";
       let set = (t, key, value) => {
         set(t, key, value);
         t
@@ -447,11 +416,11 @@ const boilerPlate2 = `
     module Credentials = {
       [@bs.module "@grpc/grpc-js"]
       [@bs.scope "credentials"]
-      external createInsecure : unit => channelCredentials = "";
+      external createInsecure : unit => channelCredentials = "createInsecure";
 
       [@bs.module "@grpc/grpc-js"]
       [@bs.scope "credentials"]
-      external createSsl : (buffer, buffer, buffer) => channelCredentials = "";
+      external createSsl : (buffer, buffer, buffer) => channelCredentials = "createSsl";
 
       [@bs.module "@grpc/grpc-js"]
       [@bs.scope "credentials"]
@@ -497,25 +466,8 @@ const resolveRelative = (moduleName, scopeName) => {
       return moduleParts.slice(i).join('.')
   throw new Error("how do i name myself?")
 }
-const objMap = (o, f) => { let r = {}; for (let k in o) r[k] = f(o[k], k); return r } // TODO get from a standard lib?
-const objJoin = (o, s) => { let r = '', i = 0; for (let k in o) r += (i ? s + o[k] : o[k]); return r } // TODO get from a standard lib?
 const lower1 = s => s[0].toLowerCase() + s.substr(1)
 const upper1 = s => s[0].toUpperCase() + s.substr(1)
-const firstPart = s => s.split('.')[0]
-/* TODO double-check this work
- * TODO what is this called?
- */
-const sortish = (a, f) => {
-  for (let i = 0; i < a.length; i++) {
-    for (let j = i + 1; j < a.length; j++) {
-      if (f(a[i], a[j]) < 0) {
-        const tmp = a[i]
-        a[i] = a[j]
-        a[j] = tmp
-      }
-    }
-  }
-}
 
 const mapJustType = (fieldProto, scopeName) => {
   switch (fieldProto.type) {
@@ -617,27 +569,6 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
 
   const rootModule = { moduleName: '*root*', modules: {} }
 
-  function handleFieldValidationOptions(field) {
-    if ('options' in field) {
-      const options = field.options
-      if (options !== null && '.tin.fieldValidation' in options) {
-        const validationSource = options['.tin.fieldValidation']
-        return validationSource
-      }
-    }
-  }
-
-  function handleMessageValidationOptions(messageType) {
-    /* check for validation criteria */
-    if ('options' in messageType) {
-      const options = messageType.options
-      if (options !== null && '.tin.messageValidation' in options) {
-        const validationSource = options['.tin.messageValidation']
-        return validationSource
-      }
-    }
-  }
-
   function handleMessageType(parentModule, messageType) {
     /* Create module for this message type */
     const moduleName = dottedModuleName(joinModuleName(parentModule.moduleName, messageType.name))
@@ -653,13 +584,11 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
         typeName: field.typeName,
         label: field.label,
         oneofIndex: field.hasOwnProperty('oneofIndex') ? field.oneofIndex : -1,
-        validation: handleFieldValidationOptions(field)
       })),
       oneofs: messageType.oneofDecl.map(oneof => ({
         name: oneof.name,
         fields: []
       })),
-      validation: handleMessageValidationOptions(messageType),
     }
     messageType.field.forEach((field, iField) => {
       if (field.hasOwnProperty('oneofIndex')) {
@@ -732,10 +661,14 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
           const name = method.name
           const inputType = mapMessageType(method.inputType)
           const outputType = mapMessageType(method.outputType)
+          const clientStreaming = method.clientStreaming
+          const serverStreaming = method.serverStreaming
           return {
             name,
             inputType,
-            outputType
+            outputType,
+            clientStreaming,
+            serverStreaming,
           }
         })
       }
@@ -743,16 +676,6 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
     })
   })
 
-  function identifyModules() {
-    const foundModules = {}
-    recurse(rootModule)
-    function recurse(module) {
-      foundModules[module.moduleName] = module;
-      for (let moduleName in module.modules)
-        recurse(module.modules[moduleName])
-    }
-    return foundModules;
-  }
   function identifyModulesArray() {
     const foundModules = []
     recurse(rootModule)
@@ -884,10 +807,6 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
               const enumModuleRef = resolveRelative(mapTypeNameToModuleName(field.typeName), module.moduleName)
               const conv = makeFunNameConvIntOfEnum(enumModuleRef)
               code += `~${lower1(field.name)} =? (`
-              if (field.label == protobufs.google.protobuf.FieldDescriptorProto.Label.LABEL_OPTIONAL)
-                code += `Validation.optionMap`
-              if (field.label == protobufs.google.protobuf.FieldDescriptorProto.Label.LABEL_REPEATED)
-                code += `Validation.optionMap @@ Array.map`
               code += `@@ ${conv}) @@ ${lower1(field.name)},\n`
             } else {
               code += `~${lower1(field.name)}?,\n`
@@ -901,10 +820,6 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
               code += `/* enum converting getter */
                 let ${field.name}Get =
               `
-              if (field.label == protobufs.google.protobuf.FieldDescriptorProto.Label.LABEL_OPTIONAL)
-                code += `Validation.optionMap`
-              if (field.label == protobufs.google.protobuf.FieldDescriptorProto.Label.LABEL_REPEATED)
-                code += `Validation.optionMap @@ Array.map`
               code += `@@ ${conv} << ${field.name}Get;
               `
             }
@@ -986,6 +901,7 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
           );
           `
         })
+<<<<<<< HEAD
         const fieldsToValidate = module.t.fields.filter(field =>
           field.validation ||
           field.type == protobufs.google.protobuf.FieldDescriptorProto.Type.TYPE_MESSAGE
@@ -1112,11 +1028,13 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
             });
           `
         }
+=======
+>>>>>>> remove Validation
         code += `
            type codec;
 
-          [@bs.send] external encode : (codec, t, justNull, justNull) => byteBuffer = "";
-          [@bs.send] external decode : (codec, Node.buffer, justNull, justNull) => t = "";
+          [@bs.send] external encode : (codec, t, justNull, justNull) => byteBuffer = "encode";
+          [@bs.send] external decode : (codec, Node.buffer, justNull, justNull) => t = "decode";
 
           [@bs.get] external codec : grpcProtoHandle => codec = ${quote(lastDottedPart(module.moduleName))};
 
@@ -1166,6 +1084,8 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
             type inputType = ${inputType};
             /** the output/reply type of the ${rpc.name} RPC */
             type outputType = ${outputType};
+            let clientStreaming = ${rpc.clientStreaming};
+            let serverStreaming = ${rpc.serverStreaming};
             /** the type of the object from which rpc implementations may
              * obtain request payload and metadata. an object of this type is
              * passed to your rpc implementation. */
@@ -1231,17 +1151,6 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
             [@bs.send]
             external invoke : (t, ${inputType}, callback) => unit = ${quote(lower1(rpc.name))};
             /** invoke an rpc using promises */
-            let invokePromise = (client, input) => Promise.resolved(resolve => invoke(client, input, (err, res) => {
-              /* note: isNullable means "is nullish" */
-              if (err |. Js.Nullable.isNullable) {
-                /* no error */
-                resolve(Belt.Result.Ok(res))
-              } else {
-                /* error */
-                resolve(Belt.Result.Error(err))
-              }
-            }));
-            /** invoke an rpc using promises */
             let invokePromise = (client, input) => Js.Promise.make((~resolve, ~reject) => {
               invoke(client, input, (err, res) => {
                 switch (err |. Js.Nullable.toOption) {
@@ -1269,18 +1178,18 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
         code += `${lower1(rpc.name)}: ${upper1(rpc.name)}Rpc.t,\n`;
       })
       code += `};
-        [@bs.send] external addService : (server, grpcServiceServer, t) => unit = "";
+        [@bs.send] external addService : (server, grpcServiceServer, t) => unit = "addService";
         let addService = (server, t) =>
           addService(server, myServerServiceHandle, t);
         /** creates an implementation of the ${module.serviceName}. The RPC
          * implementations you pass to this function will only be invoked after
-         * any sanitization/validation/normalization code has processed the
+         * any sanitization/normalization code has processed the
          * message without error. */
         let make = (
       `
       module.rpcs.forEach(rpc => {
         code += `~${lower1(rpc.name)},\n`;
-        code += `~${lower1(rpc.name)}ErrorHandler,\n`;
+        code += `~_${lower1(rpc.name)}ErrorHandler,\n`;
       })
       code += `\n) => t(\n`;
       module.rpcs.forEach(rpc => {
@@ -1288,14 +1197,7 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
                 ~${lower1(rpc.name)}=
           (call, callback) => {
             let request = call |. ${upper1(resolveRelative(rpc.name, module.moduleName))}Rpc.requestGet;
-            ${moduleDirName(resolveRelative(rpc.inputType, module.moduleName))}.validate(request)
-            |. Promise.get(x => {
-                 switch (x) {
-                 | Ok(request) => ${lower1(rpc.name)}(call, request, callback)
-                 | Error(errMsg) =>
-                   errMsg |. ${lower1(rpc.name)}ErrorHandler |> reply(callback)
-                 };
-               });
+            ${lower1(rpc.name)}(call, request, callback);
           },
         `
       })
