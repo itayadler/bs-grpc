@@ -165,7 +165,7 @@ const boilerPlate2 = `
     module Metadata = {
       type t;
       [@bs.module "@grpc/grpc-js"] [@bs.new] external make : unit => t = "Metadata";
-      [@bs.send] external set : (t, string, string) => unit = "";
+      [@bs.send] external set : (t, string, string) => unit = "set";
       let set = (t, key, value) => {
         set(t, key, value);
         t
@@ -677,8 +677,8 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
         code += `
            type codec;
 
-          [@bs.send] external encode : (codec, t, justNull, justNull) => byteBuffer = "";
-          [@bs.send] external decode : (codec, Node.buffer, justNull, justNull) => t = "";
+          [@bs.send] external encode : (codec, t, justNull, justNull) => byteBuffer = "encode";
+          [@bs.send] external decode : (codec, Node.buffer, justNull, justNull) => t = "decode";
 
           [@bs.get] external codec : grpcProtoHandle => codec = ${quote(lastDottedPart(module.moduleName))};
 
@@ -820,7 +820,7 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
         code += `${lower1(rpc.name)}: ${upper1(rpc.name)}Rpc.t,\n`;
       })
       code += `};
-        [@bs.send] external addService : (server, grpcServiceServer, t) => unit = "";
+        [@bs.send] external addService : (server, grpcServiceServer, t) => unit = "addService";
         let addService = (server, t) =>
           addService(server, myServerServiceHandle, t);
         /** creates an implementation of the ${module.serviceName}. The RPC
