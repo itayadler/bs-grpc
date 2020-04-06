@@ -193,11 +193,11 @@ const boilerPlate2 = `
     module Credentials = {
       [@bs.module "@grpc/grpc-js"]
       [@bs.scope "credentials"]
-      external createInsecure : unit => channelCredentials = "";
+      external createInsecure : unit => channelCredentials = "createInsecure";
 
       [@bs.module "@grpc/grpc-js"]
       [@bs.scope "credentials"]
-      external createSsl : (buffer, buffer, buffer) => channelCredentials = "";
+      external createSsl : (buffer, buffer, buffer) => channelCredentials = "createSsl";
 
       [@bs.module "@grpc/grpc-js"]
       [@bs.scope "credentials"]
