@@ -148,7 +148,7 @@ let makeServerModule = (serviceModules) => {
         server,
         host,
         credentials,
-        (error, port) => {
+        (_error, _port) => {
           ${bindServicesCode}
           start(server);
           ();
@@ -831,7 +831,7 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
       `
       module.rpcs.forEach(rpc => {
         code += `~${lower1(rpc.name)},\n`;
-        code += `~${lower1(rpc.name)}ErrorHandler,\n`;
+        code += `~_${lower1(rpc.name)}ErrorHandler,\n`;
       })
       code += `\n) => t(\n`;
       module.rpcs.forEach(rpc => {
