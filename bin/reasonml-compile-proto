@@ -51,7 +51,7 @@ PLUGIN_PROTO="$GRPC_TOOLS_DIR/bin/google/protobuf/compiler/plugin.proto"
   -t static-module \
   -p "$GOOGLE_PROTOBUF_PROTOS_DIR" \
   $PLUGIN_PROTO \
-  > src/protobufs.js
+  > $CURRENT_DIR/../src/protobufs.js
 
 OUTPUT_DIR=${2:="src"}
 # Invoke protoc

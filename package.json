@@ -35,7 +35,7 @@
     "bin/protoc-gen-reasonml",
     "bin/reasonml-compile-proto",
     "bsconfig.json",
-    "tin.proto",
+    "src/index.js",
     "src/protobufs.js"
   ]
 }
