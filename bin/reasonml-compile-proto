@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# TODO allow the user to specify the output file path
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 # Ensure some arguments were supplied
 if [ 1 = $(( $# < 1 )) ] ; then
@@ -16,7 +16,7 @@ else
 fi
 
 # Directory that contains our generated protobufs codecs needed for our protoc plugin
-MY_SRC_DIR="$MY_PKG_DIR/src"
+MY_SRC_DIR="$CURRENT_DIR/../src"
 
 # The above-mentioned codecs
 PROTOC_CODECS_MODULE="$MY_SRC_DIR/protobufs.js"
