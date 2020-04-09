@@ -1,4 +1,4 @@
-/*eslint-disable block-scoped-var, no-redeclare, no-control-regex, no-prototype-builtins*/
+/*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
 (function(global, factory) { /* global define, require, module */
 
     /* AMD */ if (typeof define === 'function' && define.amd)
@@ -15,18 +15,6 @@
     
     // Exported root namespace
     var $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
-    
-    $root.tin = (function() {
-    
-        /**
-         * Namespace tin.
-         * @exports tin
-         * @namespace
-         */
-        var tin = {};
-    
-        return tin;
-    })();
     
     $root.google = (function() {
     
@@ -45,6 +33,1033 @@
              * @namespace
              */
             var protobuf = {};
+    
+            protobuf.compiler = (function() {
+    
+                /**
+                 * Namespace compiler.
+                 * @memberof google.protobuf
+                 * @namespace
+                 */
+                var compiler = {};
+    
+                compiler.Version = (function() {
+    
+                    /**
+                     * Properties of a Version.
+                     * @memberof google.protobuf.compiler
+                     * @interface IVersion
+                     * @property {number|null} [major] Version major
+                     * @property {number|null} [minor] Version minor
+                     * @property {number|null} [patch] Version patch
+                     * @property {string|null} [suffix] Version suffix
+                     */
+    
+                    /**
+                     * Constructs a new Version.
+                     * @memberof google.protobuf.compiler
+                     * @classdesc Represents a Version.
+                     * @implements IVersion
+                     * @constructor
+                     * @param {google.protobuf.compiler.IVersion=} [properties] Properties to set
+                     */
+                    function Version(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * Version major.
+                     * @member {number} major
+                     * @memberof google.protobuf.compiler.Version
+                     * @instance
+                     */
+                    Version.prototype.major = 0;
+    
+                    /**
+                     * Version minor.
+                     * @member {number} minor
+                     * @memberof google.protobuf.compiler.Version
+                     * @instance
+                     */
+                    Version.prototype.minor = 0;
+    
+                    /**
+                     * Version patch.
+                     * @member {number} patch
+                     * @memberof google.protobuf.compiler.Version
+                     * @instance
+                     */
+                    Version.prototype.patch = 0;
+    
+                    /**
+                     * Version suffix.
+                     * @member {string} suffix
+                     * @memberof google.protobuf.compiler.Version
+                     * @instance
+                     */
+                    Version.prototype.suffix = "";
+    
+                    /**
+                     * Creates a new Version instance using the specified properties.
+                     * @function create
+                     * @memberof google.protobuf.compiler.Version
+                     * @static
+                     * @param {google.protobuf.compiler.IVersion=} [properties] Properties to set
+                     * @returns {google.protobuf.compiler.Version} Version instance
+                     */
+                    Version.create = function create(properties) {
+                        return new Version(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified Version message. Does not implicitly {@link google.protobuf.compiler.Version.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.protobuf.compiler.Version
+                     * @static
+                     * @param {google.protobuf.compiler.IVersion} message Version message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    Version.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.major != null && message.hasOwnProperty("major"))
+                            writer.uint32(/* id 1, wireType 0 =*/8).int32(message.major);
+                        if (message.minor != null && message.hasOwnProperty("minor"))
+                            writer.uint32(/* id 2, wireType 0 =*/16).int32(message.minor);
+                        if (message.patch != null && message.hasOwnProperty("patch"))
+                            writer.uint32(/* id 3, wireType 0 =*/24).int32(message.patch);
+                        if (message.suffix != null && message.hasOwnProperty("suffix"))
+                            writer.uint32(/* id 4, wireType 2 =*/34).string(message.suffix);
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified Version message, length delimited. Does not implicitly {@link google.protobuf.compiler.Version.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.protobuf.compiler.Version
+                     * @static
+                     * @param {google.protobuf.compiler.IVersion} message Version message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    Version.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a Version message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.protobuf.compiler.Version
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.protobuf.compiler.Version} Version
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    Version.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.compiler.Version();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.major = reader.int32();
+                                break;
+                            case 2:
+                                message.minor = reader.int32();
+                                break;
+                            case 3:
+                                message.patch = reader.int32();
+                                break;
+                            case 4:
+                                message.suffix = reader.string();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a Version message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.protobuf.compiler.Version
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.protobuf.compiler.Version} Version
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    Version.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a Version message.
+                     * @function verify
+                     * @memberof google.protobuf.compiler.Version
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    Version.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.major != null && message.hasOwnProperty("major"))
+                            if (!$util.isInteger(message.major))
+                                return "major: integer expected";
+                        if (message.minor != null && message.hasOwnProperty("minor"))
+                            if (!$util.isInteger(message.minor))
+                                return "minor: integer expected";
+                        if (message.patch != null && message.hasOwnProperty("patch"))
+                            if (!$util.isInteger(message.patch))
+                                return "patch: integer expected";
+                        if (message.suffix != null && message.hasOwnProperty("suffix"))
+                            if (!$util.isString(message.suffix))
+                                return "suffix: string expected";
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a Version message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.protobuf.compiler.Version
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.protobuf.compiler.Version} Version
+                     */
+                    Version.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.protobuf.compiler.Version)
+                            return object;
+                        var message = new $root.google.protobuf.compiler.Version();
+                        if (object.major != null)
+                            message.major = object.major | 0;
+                        if (object.minor != null)
+                            message.minor = object.minor | 0;
+                        if (object.patch != null)
+                            message.patch = object.patch | 0;
+                        if (object.suffix != null)
+                            message.suffix = String(object.suffix);
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a Version message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.protobuf.compiler.Version
+                     * @static
+                     * @param {google.protobuf.compiler.Version} message Version
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    Version.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.major = 0;
+                            object.minor = 0;
+                            object.patch = 0;
+                            object.suffix = "";
+                        }
+                        if (message.major != null && message.hasOwnProperty("major"))
+                            object.major = message.major;
+                        if (message.minor != null && message.hasOwnProperty("minor"))
+                            object.minor = message.minor;
+                        if (message.patch != null && message.hasOwnProperty("patch"))
+                            object.patch = message.patch;
+                        if (message.suffix != null && message.hasOwnProperty("suffix"))
+                            object.suffix = message.suffix;
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this Version to JSON.
+                     * @function toJSON
+                     * @memberof google.protobuf.compiler.Version
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    Version.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    return Version;
+                })();
+    
+                compiler.CodeGeneratorRequest = (function() {
+    
+                    /**
+                     * Properties of a CodeGeneratorRequest.
+                     * @memberof google.protobuf.compiler
+                     * @interface ICodeGeneratorRequest
+                     * @property {Array.<string>|null} [fileToGenerate] CodeGeneratorRequest fileToGenerate
+                     * @property {string|null} [parameter] CodeGeneratorRequest parameter
+                     * @property {Array.<google.protobuf.IFileDescriptorProto>|null} [protoFile] CodeGeneratorRequest protoFile
+                     * @property {google.protobuf.compiler.IVersion|null} [compilerVersion] CodeGeneratorRequest compilerVersion
+                     */
+    
+                    /**
+                     * Constructs a new CodeGeneratorRequest.
+                     * @memberof google.protobuf.compiler
+                     * @classdesc Represents a CodeGeneratorRequest.
+                     * @implements ICodeGeneratorRequest
+                     * @constructor
+                     * @param {google.protobuf.compiler.ICodeGeneratorRequest=} [properties] Properties to set
+                     */
+                    function CodeGeneratorRequest(properties) {
+                        this.fileToGenerate = [];
+                        this.protoFile = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * CodeGeneratorRequest fileToGenerate.
+                     * @member {Array.<string>} fileToGenerate
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @instance
+                     */
+                    CodeGeneratorRequest.prototype.fileToGenerate = $util.emptyArray;
+    
+                    /**
+                     * CodeGeneratorRequest parameter.
+                     * @member {string} parameter
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @instance
+                     */
+                    CodeGeneratorRequest.prototype.parameter = "";
+    
+                    /**
+                     * CodeGeneratorRequest protoFile.
+                     * @member {Array.<google.protobuf.IFileDescriptorProto>} protoFile
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @instance
+                     */
+                    CodeGeneratorRequest.prototype.protoFile = $util.emptyArray;
+    
+                    /**
+                     * CodeGeneratorRequest compilerVersion.
+                     * @member {google.protobuf.compiler.IVersion|null|undefined} compilerVersion
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @instance
+                     */
+                    CodeGeneratorRequest.prototype.compilerVersion = null;
+    
+                    /**
+                     * Creates a new CodeGeneratorRequest instance using the specified properties.
+                     * @function create
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @static
+                     * @param {google.protobuf.compiler.ICodeGeneratorRequest=} [properties] Properties to set
+                     * @returns {google.protobuf.compiler.CodeGeneratorRequest} CodeGeneratorRequest instance
+                     */
+                    CodeGeneratorRequest.create = function create(properties) {
+                        return new CodeGeneratorRequest(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified CodeGeneratorRequest message. Does not implicitly {@link google.protobuf.compiler.CodeGeneratorRequest.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @static
+                     * @param {google.protobuf.compiler.ICodeGeneratorRequest} message CodeGeneratorRequest message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    CodeGeneratorRequest.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.fileToGenerate != null && message.fileToGenerate.length)
+                            for (var i = 0; i < message.fileToGenerate.length; ++i)
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.fileToGenerate[i]);
+                        if (message.parameter != null && message.hasOwnProperty("parameter"))
+                            writer.uint32(/* id 2, wireType 2 =*/18).string(message.parameter);
+                        if (message.compilerVersion != null && message.hasOwnProperty("compilerVersion"))
+                            $root.google.protobuf.compiler.Version.encode(message.compilerVersion, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                        if (message.protoFile != null && message.protoFile.length)
+                            for (var i = 0; i < message.protoFile.length; ++i)
+                                $root.google.protobuf.FileDescriptorProto.encode(message.protoFile[i], writer.uint32(/* id 15, wireType 2 =*/122).fork()).ldelim();
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified CodeGeneratorRequest message, length delimited. Does not implicitly {@link google.protobuf.compiler.CodeGeneratorRequest.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @static
+                     * @param {google.protobuf.compiler.ICodeGeneratorRequest} message CodeGeneratorRequest message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    CodeGeneratorRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a CodeGeneratorRequest message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.protobuf.compiler.CodeGeneratorRequest} CodeGeneratorRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    CodeGeneratorRequest.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.compiler.CodeGeneratorRequest();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                if (!(message.fileToGenerate && message.fileToGenerate.length))
+                                    message.fileToGenerate = [];
+                                message.fileToGenerate.push(reader.string());
+                                break;
+                            case 2:
+                                message.parameter = reader.string();
+                                break;
+                            case 15:
+                                if (!(message.protoFile && message.protoFile.length))
+                                    message.protoFile = [];
+                                message.protoFile.push($root.google.protobuf.FileDescriptorProto.decode(reader, reader.uint32()));
+                                break;
+                            case 3:
+                                message.compilerVersion = $root.google.protobuf.compiler.Version.decode(reader, reader.uint32());
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a CodeGeneratorRequest message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.protobuf.compiler.CodeGeneratorRequest} CodeGeneratorRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    CodeGeneratorRequest.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a CodeGeneratorRequest message.
+                     * @function verify
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    CodeGeneratorRequest.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.fileToGenerate != null && message.hasOwnProperty("fileToGenerate")) {
+                            if (!Array.isArray(message.fileToGenerate))
+                                return "fileToGenerate: array expected";
+                            for (var i = 0; i < message.fileToGenerate.length; ++i)
+                                if (!$util.isString(message.fileToGenerate[i]))
+                                    return "fileToGenerate: string[] expected";
+                        }
+                        if (message.parameter != null && message.hasOwnProperty("parameter"))
+                            if (!$util.isString(message.parameter))
+                                return "parameter: string expected";
+                        if (message.protoFile != null && message.hasOwnProperty("protoFile")) {
+                            if (!Array.isArray(message.protoFile))
+                                return "protoFile: array expected";
+                            for (var i = 0; i < message.protoFile.length; ++i) {
+                                var error = $root.google.protobuf.FileDescriptorProto.verify(message.protoFile[i]);
+                                if (error)
+                                    return "protoFile." + error;
+                            }
+                        }
+                        if (message.compilerVersion != null && message.hasOwnProperty("compilerVersion")) {
+                            var error = $root.google.protobuf.compiler.Version.verify(message.compilerVersion);
+                            if (error)
+                                return "compilerVersion." + error;
+                        }
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a CodeGeneratorRequest message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.protobuf.compiler.CodeGeneratorRequest} CodeGeneratorRequest
+                     */
+                    CodeGeneratorRequest.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.protobuf.compiler.CodeGeneratorRequest)
+                            return object;
+                        var message = new $root.google.protobuf.compiler.CodeGeneratorRequest();
+                        if (object.fileToGenerate) {
+                            if (!Array.isArray(object.fileToGenerate))
+                                throw TypeError(".google.protobuf.compiler.CodeGeneratorRequest.fileToGenerate: array expected");
+                            message.fileToGenerate = [];
+                            for (var i = 0; i < object.fileToGenerate.length; ++i)
+                                message.fileToGenerate[i] = String(object.fileToGenerate[i]);
+                        }
+                        if (object.parameter != null)
+                            message.parameter = String(object.parameter);
+                        if (object.protoFile) {
+                            if (!Array.isArray(object.protoFile))
+                                throw TypeError(".google.protobuf.compiler.CodeGeneratorRequest.protoFile: array expected");
+                            message.protoFile = [];
+                            for (var i = 0; i < object.protoFile.length; ++i) {
+                                if (typeof object.protoFile[i] !== "object")
+                                    throw TypeError(".google.protobuf.compiler.CodeGeneratorRequest.protoFile: object expected");
+                                message.protoFile[i] = $root.google.protobuf.FileDescriptorProto.fromObject(object.protoFile[i]);
+                            }
+                        }
+                        if (object.compilerVersion != null) {
+                            if (typeof object.compilerVersion !== "object")
+                                throw TypeError(".google.protobuf.compiler.CodeGeneratorRequest.compilerVersion: object expected");
+                            message.compilerVersion = $root.google.protobuf.compiler.Version.fromObject(object.compilerVersion);
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a CodeGeneratorRequest message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @static
+                     * @param {google.protobuf.compiler.CodeGeneratorRequest} message CodeGeneratorRequest
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    CodeGeneratorRequest.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults) {
+                            object.fileToGenerate = [];
+                            object.protoFile = [];
+                        }
+                        if (options.defaults) {
+                            object.parameter = "";
+                            object.compilerVersion = null;
+                        }
+                        if (message.fileToGenerate && message.fileToGenerate.length) {
+                            object.fileToGenerate = [];
+                            for (var j = 0; j < message.fileToGenerate.length; ++j)
+                                object.fileToGenerate[j] = message.fileToGenerate[j];
+                        }
+                        if (message.parameter != null && message.hasOwnProperty("parameter"))
+                            object.parameter = message.parameter;
+                        if (message.compilerVersion != null && message.hasOwnProperty("compilerVersion"))
+                            object.compilerVersion = $root.google.protobuf.compiler.Version.toObject(message.compilerVersion, options);
+                        if (message.protoFile && message.protoFile.length) {
+                            object.protoFile = [];
+                            for (var j = 0; j < message.protoFile.length; ++j)
+                                object.protoFile[j] = $root.google.protobuf.FileDescriptorProto.toObject(message.protoFile[j], options);
+                        }
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this CodeGeneratorRequest to JSON.
+                     * @function toJSON
+                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    CodeGeneratorRequest.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    return CodeGeneratorRequest;
+                })();
+    
+                compiler.CodeGeneratorResponse = (function() {
+    
+                    /**
+                     * Properties of a CodeGeneratorResponse.
+                     * @memberof google.protobuf.compiler
+                     * @interface ICodeGeneratorResponse
+                     * @property {string|null} [error] CodeGeneratorResponse error
+                     * @property {Array.<google.protobuf.compiler.CodeGeneratorResponse.IFile>|null} [file] CodeGeneratorResponse file
+                     */
+    
+                    /**
+                     * Constructs a new CodeGeneratorResponse.
+                     * @memberof google.protobuf.compiler
+                     * @classdesc Represents a CodeGeneratorResponse.
+                     * @implements ICodeGeneratorResponse
+                     * @constructor
+                     * @param {google.protobuf.compiler.ICodeGeneratorResponse=} [properties] Properties to set
+                     */
+                    function CodeGeneratorResponse(properties) {
+                        this.file = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * CodeGeneratorResponse error.
+                     * @member {string} error
+                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                     * @instance
+                     */
+                    CodeGeneratorResponse.prototype.error = "";
+    
+                    /**
+                     * CodeGeneratorResponse file.
+                     * @member {Array.<google.protobuf.compiler.CodeGeneratorResponse.IFile>} file
+                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                     * @instance
+                     */
+                    CodeGeneratorResponse.prototype.file = $util.emptyArray;
+    
+                    /**
+                     * Creates a new CodeGeneratorResponse instance using the specified properties.
+                     * @function create
+                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                     * @static
+                     * @param {google.protobuf.compiler.ICodeGeneratorResponse=} [properties] Properties to set
+                     * @returns {google.protobuf.compiler.CodeGeneratorResponse} CodeGeneratorResponse instance
+                     */
+                    CodeGeneratorResponse.create = function create(properties) {
+                        return new CodeGeneratorResponse(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified CodeGeneratorResponse message. Does not implicitly {@link google.protobuf.compiler.CodeGeneratorResponse.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                     * @static
+                     * @param {google.protobuf.compiler.ICodeGeneratorResponse} message CodeGeneratorResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    CodeGeneratorResponse.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.error != null && message.hasOwnProperty("error"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.error);
+                        if (message.file != null && message.file.length)
+                            for (var i = 0; i < message.file.length; ++i)
+                                $root.google.protobuf.compiler.CodeGeneratorResponse.File.encode(message.file[i], writer.uint32(/* id 15, wireType 2 =*/122).fork()).ldelim();
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified CodeGeneratorResponse message, length delimited. Does not implicitly {@link google.protobuf.compiler.CodeGeneratorResponse.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                     * @static
+                     * @param {google.protobuf.compiler.ICodeGeneratorResponse} message CodeGeneratorResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    CodeGeneratorResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a CodeGeneratorResponse message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.protobuf.compiler.CodeGeneratorResponse} CodeGeneratorResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    CodeGeneratorResponse.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.compiler.CodeGeneratorResponse();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.error = reader.string();
+                                break;
+                            case 15:
+                                if (!(message.file && message.file.length))
+                                    message.file = [];
+                                message.file.push($root.google.protobuf.compiler.CodeGeneratorResponse.File.decode(reader, reader.uint32()));
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a CodeGeneratorResponse message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.protobuf.compiler.CodeGeneratorResponse} CodeGeneratorResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    CodeGeneratorResponse.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a CodeGeneratorResponse message.
+                     * @function verify
+                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    CodeGeneratorResponse.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.error != null && message.hasOwnProperty("error"))
+                            if (!$util.isString(message.error))
+                                return "error: string expected";
+                        if (message.file != null && message.hasOwnProperty("file")) {
+                            if (!Array.isArray(message.file))
+                                return "file: array expected";
+                            for (var i = 0; i < message.file.length; ++i) {
+                                var error = $root.google.protobuf.compiler.CodeGeneratorResponse.File.verify(message.file[i]);
+                                if (error)
+                                    return "file." + error;
+                            }
+                        }
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a CodeGeneratorResponse message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.protobuf.compiler.CodeGeneratorResponse} CodeGeneratorResponse
+                     */
+                    CodeGeneratorResponse.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.protobuf.compiler.CodeGeneratorResponse)
+                            return object;
+                        var message = new $root.google.protobuf.compiler.CodeGeneratorResponse();
+                        if (object.error != null)
+                            message.error = String(object.error);
+                        if (object.file) {
+                            if (!Array.isArray(object.file))
+                                throw TypeError(".google.protobuf.compiler.CodeGeneratorResponse.file: array expected");
+                            message.file = [];
+                            for (var i = 0; i < object.file.length; ++i) {
+                                if (typeof object.file[i] !== "object")
+                                    throw TypeError(".google.protobuf.compiler.CodeGeneratorResponse.file: object expected");
+                                message.file[i] = $root.google.protobuf.compiler.CodeGeneratorResponse.File.fromObject(object.file[i]);
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a CodeGeneratorResponse message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                     * @static
+                     * @param {google.protobuf.compiler.CodeGeneratorResponse} message CodeGeneratorResponse
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    CodeGeneratorResponse.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.file = [];
+                        if (options.defaults)
+                            object.error = "";
+                        if (message.error != null && message.hasOwnProperty("error"))
+                            object.error = message.error;
+                        if (message.file && message.file.length) {
+                            object.file = [];
+                            for (var j = 0; j < message.file.length; ++j)
+                                object.file[j] = $root.google.protobuf.compiler.CodeGeneratorResponse.File.toObject(message.file[j], options);
+                        }
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this CodeGeneratorResponse to JSON.
+                     * @function toJSON
+                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    CodeGeneratorResponse.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    CodeGeneratorResponse.File = (function() {
+    
+                        /**
+                         * Properties of a File.
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                         * @interface IFile
+                         * @property {string|null} [name] File name
+                         * @property {string|null} [insertionPoint] File insertionPoint
+                         * @property {string|null} [content] File content
+                         */
+    
+                        /**
+                         * Constructs a new File.
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse
+                         * @classdesc Represents a File.
+                         * @implements IFile
+                         * @constructor
+                         * @param {google.protobuf.compiler.CodeGeneratorResponse.IFile=} [properties] Properties to set
+                         */
+                        function File(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * File name.
+                         * @member {string} name
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
+                         * @instance
+                         */
+                        File.prototype.name = "";
+    
+                        /**
+                         * File insertionPoint.
+                         * @member {string} insertionPoint
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
+                         * @instance
+                         */
+                        File.prototype.insertionPoint = "";
+    
+                        /**
+                         * File content.
+                         * @member {string} content
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
+                         * @instance
+                         */
+                        File.prototype.content = "";
+    
+                        /**
+                         * Creates a new File instance using the specified properties.
+                         * @function create
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
+                         * @static
+                         * @param {google.protobuf.compiler.CodeGeneratorResponse.IFile=} [properties] Properties to set
+                         * @returns {google.protobuf.compiler.CodeGeneratorResponse.File} File instance
+                         */
+                        File.create = function create(properties) {
+                            return new File(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified File message. Does not implicitly {@link google.protobuf.compiler.CodeGeneratorResponse.File.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
+                         * @static
+                         * @param {google.protobuf.compiler.CodeGeneratorResponse.IFile} message File message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        File.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.insertionPoint != null && message.hasOwnProperty("insertionPoint"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.insertionPoint);
+                            if (message.content != null && message.hasOwnProperty("content"))
+                                writer.uint32(/* id 15, wireType 2 =*/122).string(message.content);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified File message, length delimited. Does not implicitly {@link google.protobuf.compiler.CodeGeneratorResponse.File.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
+                         * @static
+                         * @param {google.protobuf.compiler.CodeGeneratorResponse.IFile} message File message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        File.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a File message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.protobuf.compiler.CodeGeneratorResponse.File} File
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        File.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.compiler.CodeGeneratorResponse.File();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.name = reader.string();
+                                    break;
+                                case 2:
+                                    message.insertionPoint = reader.string();
+                                    break;
+                                case 15:
+                                    message.content = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a File message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.protobuf.compiler.CodeGeneratorResponse.File} File
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        File.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a File message.
+                         * @function verify
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        File.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.insertionPoint != null && message.hasOwnProperty("insertionPoint"))
+                                if (!$util.isString(message.insertionPoint))
+                                    return "insertionPoint: string expected";
+                            if (message.content != null && message.hasOwnProperty("content"))
+                                if (!$util.isString(message.content))
+                                    return "content: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a File message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.protobuf.compiler.CodeGeneratorResponse.File} File
+                         */
+                        File.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.protobuf.compiler.CodeGeneratorResponse.File)
+                                return object;
+                            var message = new $root.google.protobuf.compiler.CodeGeneratorResponse.File();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.insertionPoint != null)
+                                message.insertionPoint = String(object.insertionPoint);
+                            if (object.content != null)
+                                message.content = String(object.content);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a File message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
+                         * @static
+                         * @param {google.protobuf.compiler.CodeGeneratorResponse.File} message File
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        File.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.insertionPoint = "";
+                                object.content = "";
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.insertionPoint != null && message.hasOwnProperty("insertionPoint"))
+                                object.insertionPoint = message.insertionPoint;
+                            if (message.content != null && message.hasOwnProperty("content"))
+                                object.content = message.content;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this File to JSON.
+                         * @function toJSON
+                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        File.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return File;
+                    })();
+    
+                    return CodeGeneratorResponse;
+                })();
+    
+                return compiler;
+            })();
     
             protobuf.FileDescriptorSet = (function() {
     
@@ -3672,8 +4687,6 @@
                  * @property {string|null} [objcClassPrefix] FileOptions objcClassPrefix
                  * @property {string|null} [csharpNamespace] FileOptions csharpNamespace
                  * @property {Array.<google.protobuf.IUninterpretedOption>|null} [uninterpretedOption] FileOptions uninterpretedOption
-                 * @property {string|null} [".tin.moduleValidation"] FileOptions .tin.moduleValidation
-                 * @property {boolean|null} [".tin.noCodeEmission"] FileOptions .tin.noCodeEmission
                  */
     
                 /**
@@ -3813,22 +4826,6 @@
                 FileOptions.prototype.uninterpretedOption = $util.emptyArray;
     
                 /**
-                 * FileOptions .tin.moduleValidation.
-                 * @member {string} .tin.moduleValidation
-                 * @memberof google.protobuf.FileOptions
-                 * @instance
-                 */
-                FileOptions.prototype[".tin.moduleValidation"] = "";
-    
-                /**
-                 * FileOptions .tin.noCodeEmission.
-                 * @member {boolean} .tin.noCodeEmission
-                 * @memberof google.protobuf.FileOptions
-                 * @instance
-                 */
-                FileOptions.prototype[".tin.noCodeEmission"] = false;
-    
-                /**
                  * Creates a new FileOptions instance using the specified properties.
                  * @function create
                  * @memberof google.protobuf.FileOptions
@@ -3883,10 +4880,6 @@
                     if (message.uninterpretedOption != null && message.uninterpretedOption.length)
                         for (var i = 0; i < message.uninterpretedOption.length; ++i)
                             $root.google.protobuf.UninterpretedOption.encode(message.uninterpretedOption[i], writer.uint32(/* id 999, wireType 2 =*/7994).fork()).ldelim();
-                    if (message[".tin.moduleValidation"] != null && message.hasOwnProperty(".tin.moduleValidation"))
-                        writer.uint32(/* id 4000, wireType 2 =*/32002).string(message[".tin.moduleValidation"]);
-                    if (message[".tin.noCodeEmission"] != null && message.hasOwnProperty(".tin.noCodeEmission"))
-                        writer.uint32(/* id 4001, wireType 0 =*/32008).bool(message[".tin.noCodeEmission"]);
                     return writer;
                 };
     
@@ -3967,12 +4960,6 @@
                             if (!(message.uninterpretedOption && message.uninterpretedOption.length))
                                 message.uninterpretedOption = [];
                             message.uninterpretedOption.push($root.google.protobuf.UninterpretedOption.decode(reader, reader.uint32()));
-                            break;
-                        case 4000:
-                            message[".tin.moduleValidation"] = reader.string();
-                            break;
-                        case 4001:
-                            message[".tin.noCodeEmission"] = reader.bool();
                             break;
                         default:
                             reader.skipType(tag & 7);
@@ -4066,12 +5053,6 @@
                                 return "uninterpretedOption." + error;
                         }
                     }
-                    if (message[".tin.moduleValidation"] != null && message.hasOwnProperty(".tin.moduleValidation"))
-                        if (!$util.isString(message[".tin.moduleValidation"]))
-                            return ".tin.moduleValidation: string expected";
-                    if (message[".tin.noCodeEmission"] != null && message.hasOwnProperty(".tin.noCodeEmission"))
-                        if (typeof message[".tin.noCodeEmission"] !== "boolean")
-                            return ".tin.noCodeEmission: boolean expected";
                     return null;
                 };
     
@@ -4137,10 +5118,6 @@
                             message.uninterpretedOption[i] = $root.google.protobuf.UninterpretedOption.fromObject(object.uninterpretedOption[i]);
                         }
                     }
-                    if (object[".tin.moduleValidation"] != null)
-                        message[".tin.moduleValidation"] = String(object[".tin.moduleValidation"]);
-                    if (object[".tin.noCodeEmission"] != null)
-                        message[".tin.noCodeEmission"] = Boolean(object[".tin.noCodeEmission"]);
                     return message;
                 };
     
@@ -4174,8 +5151,6 @@
                         object.ccEnableArenas = false;
                         object.objcClassPrefix = "";
                         object.csharpNamespace = "";
-                        object[".tin.moduleValidation"] = "";
-                        object[".tin.noCodeEmission"] = false;
                     }
                     if (message.javaPackage != null && message.hasOwnProperty("javaPackage"))
                         object.javaPackage = message.javaPackage;
@@ -4210,10 +5185,6 @@
                         for (var j = 0; j < message.uninterpretedOption.length; ++j)
                             object.uninterpretedOption[j] = $root.google.protobuf.UninterpretedOption.toObject(message.uninterpretedOption[j], options);
                     }
-                    if (message[".tin.moduleValidation"] != null && message.hasOwnProperty(".tin.moduleValidation"))
-                        object[".tin.moduleValidation"] = message[".tin.moduleValidation"];
-                    if (message[".tin.noCodeEmission"] != null && message.hasOwnProperty(".tin.noCodeEmission"))
-                        object[".tin.noCodeEmission"] = message[".tin.noCodeEmission"];
                     return object;
                 };
     
@@ -4258,7 +5229,6 @@
                  * @property {boolean|null} [deprecated] MessageOptions deprecated
                  * @property {boolean|null} [mapEntry] MessageOptions mapEntry
                  * @property {Array.<google.protobuf.IUninterpretedOption>|null} [uninterpretedOption] MessageOptions uninterpretedOption
-                 * @property {string|null} [".tin.messageValidation"] MessageOptions .tin.messageValidation
                  */
     
                 /**
@@ -4318,14 +5288,6 @@
                 MessageOptions.prototype.uninterpretedOption = $util.emptyArray;
     
                 /**
-                 * MessageOptions .tin.messageValidation.
-                 * @member {string} .tin.messageValidation
-                 * @memberof google.protobuf.MessageOptions
-                 * @instance
-                 */
-                MessageOptions.prototype[".tin.messageValidation"] = "";
-    
-                /**
                  * Creates a new MessageOptions instance using the specified properties.
                  * @function create
                  * @memberof google.protobuf.MessageOptions
@@ -4360,8 +5322,6 @@
                     if (message.uninterpretedOption != null && message.uninterpretedOption.length)
                         for (var i = 0; i < message.uninterpretedOption.length; ++i)
                             $root.google.protobuf.UninterpretedOption.encode(message.uninterpretedOption[i], writer.uint32(/* id 999, wireType 2 =*/7994).fork()).ldelim();
-                    if (message[".tin.messageValidation"] != null && message.hasOwnProperty(".tin.messageValidation"))
-                        writer.uint32(/* id 4000, wireType 2 =*/32002).string(message[".tin.messageValidation"]);
                     return writer;
                 };
     
@@ -4412,9 +5372,6 @@
                             if (!(message.uninterpretedOption && message.uninterpretedOption.length))
                                 message.uninterpretedOption = [];
                             message.uninterpretedOption.push($root.google.protobuf.UninterpretedOption.decode(reader, reader.uint32()));
-                            break;
-                        case 4000:
-                            message[".tin.messageValidation"] = reader.string();
                             break;
                         default:
                             reader.skipType(tag & 7);
@@ -4472,9 +5429,6 @@
                                 return "uninterpretedOption." + error;
                         }
                     }
-                    if (message[".tin.messageValidation"] != null && message.hasOwnProperty(".tin.messageValidation"))
-                        if (!$util.isString(message[".tin.messageValidation"]))
-                            return ".tin.messageValidation: string expected";
                     return null;
                 };
     
@@ -4508,8 +5462,6 @@
                             message.uninterpretedOption[i] = $root.google.protobuf.UninterpretedOption.fromObject(object.uninterpretedOption[i]);
                         }
                     }
-                    if (object[".tin.messageValidation"] != null)
-                        message[".tin.messageValidation"] = String(object[".tin.messageValidation"]);
                     return message;
                 };
     
@@ -4533,7 +5485,6 @@
                         object.noStandardDescriptorAccessor = false;
                         object.deprecated = false;
                         object.mapEntry = false;
-                        object[".tin.messageValidation"] = "";
                     }
                     if (message.messageSetWireFormat != null && message.hasOwnProperty("messageSetWireFormat"))
                         object.messageSetWireFormat = message.messageSetWireFormat;
@@ -4548,8 +5499,6 @@
                         for (var j = 0; j < message.uninterpretedOption.length; ++j)
                             object.uninterpretedOption[j] = $root.google.protobuf.UninterpretedOption.toObject(message.uninterpretedOption[j], options);
                     }
-                    if (message[".tin.messageValidation"] != null && message.hasOwnProperty(".tin.messageValidation"))
-                        object[".tin.messageValidation"] = message[".tin.messageValidation"];
                     return object;
                 };
     
@@ -4580,7 +5529,6 @@
                  * @property {boolean|null} [deprecated] FieldOptions deprecated
                  * @property {boolean|null} [weak] FieldOptions weak
                  * @property {Array.<google.protobuf.IUninterpretedOption>|null} [uninterpretedOption] FieldOptions uninterpretedOption
-                 * @property {string|null} [".tin.fieldValidation"] FieldOptions .tin.fieldValidation
                  */
     
                 /**
@@ -4656,14 +5604,6 @@
                 FieldOptions.prototype.uninterpretedOption = $util.emptyArray;
     
                 /**
-                 * FieldOptions .tin.fieldValidation.
-                 * @member {string} .tin.fieldValidation
-                 * @memberof google.protobuf.FieldOptions
-                 * @instance
-                 */
-                FieldOptions.prototype[".tin.fieldValidation"] = "";
-    
-                /**
                  * Creates a new FieldOptions instance using the specified properties.
                  * @function create
                  * @memberof google.protobuf.FieldOptions
@@ -4702,8 +5642,6 @@
                     if (message.uninterpretedOption != null && message.uninterpretedOption.length)
                         for (var i = 0; i < message.uninterpretedOption.length; ++i)
                             $root.google.protobuf.UninterpretedOption.encode(message.uninterpretedOption[i], writer.uint32(/* id 999, wireType 2 =*/7994).fork()).ldelim();
-                    if (message[".tin.fieldValidation"] != null && message.hasOwnProperty(".tin.fieldValidation"))
-                        writer.uint32(/* id 4000, wireType 2 =*/32002).string(message[".tin.fieldValidation"]);
                     return writer;
                 };
     
@@ -4760,9 +5698,6 @@
                             if (!(message.uninterpretedOption && message.uninterpretedOption.length))
                                 message.uninterpretedOption = [];
                             message.uninterpretedOption.push($root.google.protobuf.UninterpretedOption.decode(reader, reader.uint32()));
-                            break;
-                        case 4000:
-                            message[".tin.fieldValidation"] = reader.string();
                             break;
                         default:
                             reader.skipType(tag & 7);
@@ -4838,9 +5773,6 @@
                                 return "uninterpretedOption." + error;
                         }
                     }
-                    if (message[".tin.fieldValidation"] != null && message.hasOwnProperty(".tin.fieldValidation"))
-                        if (!$util.isString(message[".tin.fieldValidation"]))
-                            return ".tin.fieldValidation: string expected";
                     return null;
                 };
     
@@ -4902,8 +5834,6 @@
                             message.uninterpretedOption[i] = $root.google.protobuf.UninterpretedOption.fromObject(object.uninterpretedOption[i]);
                         }
                     }
-                    if (object[".tin.fieldValidation"] != null)
-                        message[".tin.fieldValidation"] = String(object[".tin.fieldValidation"]);
                     return message;
                 };
     
@@ -4929,7 +5859,6 @@
                         object.lazy = false;
                         object.jstype = options.enums === String ? "JS_NORMAL" : 0;
                         object.weak = false;
-                        object[".tin.fieldValidation"] = "";
                     }
                     if (message.ctype != null && message.hasOwnProperty("ctype"))
                         object.ctype = options.enums === String ? $root.google.protobuf.FieldOptions.CType[message.ctype] : message.ctype;
@@ -4948,8 +5877,6 @@
                         for (var j = 0; j < message.uninterpretedOption.length; ++j)
                             object.uninterpretedOption[j] = $root.google.protobuf.UninterpretedOption.toObject(message.uninterpretedOption[j], options);
                     }
-                    if (message[".tin.fieldValidation"] != null && message.hasOwnProperty(".tin.fieldValidation"))
-                        object[".tin.fieldValidation"] = message[".tin.fieldValidation"];
                     return object;
                 };
     
@@ -6484,7 +7411,13 @@
                         } else
                             object.negativeIntValue = options.longs === String ? "0" : 0;
                         object.doubleValue = 0;
-                        object.stringValue = options.bytes === String ? "" : [];
+                        if (options.bytes === String)
+                            object.stringValue = "";
+                        else {
+                            object.stringValue = [];
+                            if (options.bytes !== Array)
+                                object.stringValue = $util.newBuffer(object.stringValue);
+                        }
                         object.aggregateValue = "";
                     }
                     if (message.name && message.name.length) {
@@ -7772,1033 +8705,6 @@
                 })();
     
                 return GeneratedCodeInfo;
-            })();
-    
-            protobuf.compiler = (function() {
-    
-                /**
-                 * Namespace compiler.
-                 * @memberof google.protobuf
-                 * @namespace
-                 */
-                var compiler = {};
-    
-                compiler.Version = (function() {
-    
-                    /**
-                     * Properties of a Version.
-                     * @memberof google.protobuf.compiler
-                     * @interface IVersion
-                     * @property {number|null} [major] Version major
-                     * @property {number|null} [minor] Version minor
-                     * @property {number|null} [patch] Version patch
-                     * @property {string|null} [suffix] Version suffix
-                     */
-    
-                    /**
-                     * Constructs a new Version.
-                     * @memberof google.protobuf.compiler
-                     * @classdesc Represents a Version.
-                     * @implements IVersion
-                     * @constructor
-                     * @param {google.protobuf.compiler.IVersion=} [properties] Properties to set
-                     */
-                    function Version(properties) {
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-    
-                    /**
-                     * Version major.
-                     * @member {number} major
-                     * @memberof google.protobuf.compiler.Version
-                     * @instance
-                     */
-                    Version.prototype.major = 0;
-    
-                    /**
-                     * Version minor.
-                     * @member {number} minor
-                     * @memberof google.protobuf.compiler.Version
-                     * @instance
-                     */
-                    Version.prototype.minor = 0;
-    
-                    /**
-                     * Version patch.
-                     * @member {number} patch
-                     * @memberof google.protobuf.compiler.Version
-                     * @instance
-                     */
-                    Version.prototype.patch = 0;
-    
-                    /**
-                     * Version suffix.
-                     * @member {string} suffix
-                     * @memberof google.protobuf.compiler.Version
-                     * @instance
-                     */
-                    Version.prototype.suffix = "";
-    
-                    /**
-                     * Creates a new Version instance using the specified properties.
-                     * @function create
-                     * @memberof google.protobuf.compiler.Version
-                     * @static
-                     * @param {google.protobuf.compiler.IVersion=} [properties] Properties to set
-                     * @returns {google.protobuf.compiler.Version} Version instance
-                     */
-                    Version.create = function create(properties) {
-                        return new Version(properties);
-                    };
-    
-                    /**
-                     * Encodes the specified Version message. Does not implicitly {@link google.protobuf.compiler.Version.verify|verify} messages.
-                     * @function encode
-                     * @memberof google.protobuf.compiler.Version
-                     * @static
-                     * @param {google.protobuf.compiler.IVersion} message Version message or plain object to encode
-                     * @param {$protobuf.Writer} [writer] Writer to encode to
-                     * @returns {$protobuf.Writer} Writer
-                     */
-                    Version.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.major != null && message.hasOwnProperty("major"))
-                            writer.uint32(/* id 1, wireType 0 =*/8).int32(message.major);
-                        if (message.minor != null && message.hasOwnProperty("minor"))
-                            writer.uint32(/* id 2, wireType 0 =*/16).int32(message.minor);
-                        if (message.patch != null && message.hasOwnProperty("patch"))
-                            writer.uint32(/* id 3, wireType 0 =*/24).int32(message.patch);
-                        if (message.suffix != null && message.hasOwnProperty("suffix"))
-                            writer.uint32(/* id 4, wireType 2 =*/34).string(message.suffix);
-                        return writer;
-                    };
-    
-                    /**
-                     * Encodes the specified Version message, length delimited. Does not implicitly {@link google.protobuf.compiler.Version.verify|verify} messages.
-                     * @function encodeDelimited
-                     * @memberof google.protobuf.compiler.Version
-                     * @static
-                     * @param {google.protobuf.compiler.IVersion} message Version message or plain object to encode
-                     * @param {$protobuf.Writer} [writer] Writer to encode to
-                     * @returns {$protobuf.Writer} Writer
-                     */
-                    Version.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-    
-                    /**
-                     * Decodes a Version message from the specified reader or buffer.
-                     * @function decode
-                     * @memberof google.protobuf.compiler.Version
-                     * @static
-                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @param {number} [length] Message length if known beforehand
-                     * @returns {google.protobuf.compiler.Version} Version
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    Version.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.compiler.Version();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.major = reader.int32();
-                                break;
-                            case 2:
-                                message.minor = reader.int32();
-                                break;
-                            case 3:
-                                message.patch = reader.int32();
-                                break;
-                            case 4:
-                                message.suffix = reader.string();
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-    
-                    /**
-                     * Decodes a Version message from the specified reader or buffer, length delimited.
-                     * @function decodeDelimited
-                     * @memberof google.protobuf.compiler.Version
-                     * @static
-                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @returns {google.protobuf.compiler.Version} Version
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    Version.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-    
-                    /**
-                     * Verifies a Version message.
-                     * @function verify
-                     * @memberof google.protobuf.compiler.Version
-                     * @static
-                     * @param {Object.<string,*>} message Plain object to verify
-                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                     */
-                    Version.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.major != null && message.hasOwnProperty("major"))
-                            if (!$util.isInteger(message.major))
-                                return "major: integer expected";
-                        if (message.minor != null && message.hasOwnProperty("minor"))
-                            if (!$util.isInteger(message.minor))
-                                return "minor: integer expected";
-                        if (message.patch != null && message.hasOwnProperty("patch"))
-                            if (!$util.isInteger(message.patch))
-                                return "patch: integer expected";
-                        if (message.suffix != null && message.hasOwnProperty("suffix"))
-                            if (!$util.isString(message.suffix))
-                                return "suffix: string expected";
-                        return null;
-                    };
-    
-                    /**
-                     * Creates a Version message from a plain object. Also converts values to their respective internal types.
-                     * @function fromObject
-                     * @memberof google.protobuf.compiler.Version
-                     * @static
-                     * @param {Object.<string,*>} object Plain object
-                     * @returns {google.protobuf.compiler.Version} Version
-                     */
-                    Version.fromObject = function fromObject(object) {
-                        if (object instanceof $root.google.protobuf.compiler.Version)
-                            return object;
-                        var message = new $root.google.protobuf.compiler.Version();
-                        if (object.major != null)
-                            message.major = object.major | 0;
-                        if (object.minor != null)
-                            message.minor = object.minor | 0;
-                        if (object.patch != null)
-                            message.patch = object.patch | 0;
-                        if (object.suffix != null)
-                            message.suffix = String(object.suffix);
-                        return message;
-                    };
-    
-                    /**
-                     * Creates a plain object from a Version message. Also converts values to other types if specified.
-                     * @function toObject
-                     * @memberof google.protobuf.compiler.Version
-                     * @static
-                     * @param {google.protobuf.compiler.Version} message Version
-                     * @param {$protobuf.IConversionOptions} [options] Conversion options
-                     * @returns {Object.<string,*>} Plain object
-                     */
-                    Version.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.defaults) {
-                            object.major = 0;
-                            object.minor = 0;
-                            object.patch = 0;
-                            object.suffix = "";
-                        }
-                        if (message.major != null && message.hasOwnProperty("major"))
-                            object.major = message.major;
-                        if (message.minor != null && message.hasOwnProperty("minor"))
-                            object.minor = message.minor;
-                        if (message.patch != null && message.hasOwnProperty("patch"))
-                            object.patch = message.patch;
-                        if (message.suffix != null && message.hasOwnProperty("suffix"))
-                            object.suffix = message.suffix;
-                        return object;
-                    };
-    
-                    /**
-                     * Converts this Version to JSON.
-                     * @function toJSON
-                     * @memberof google.protobuf.compiler.Version
-                     * @instance
-                     * @returns {Object.<string,*>} JSON object
-                     */
-                    Version.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-    
-                    return Version;
-                })();
-    
-                compiler.CodeGeneratorRequest = (function() {
-    
-                    /**
-                     * Properties of a CodeGeneratorRequest.
-                     * @memberof google.protobuf.compiler
-                     * @interface ICodeGeneratorRequest
-                     * @property {Array.<string>|null} [fileToGenerate] CodeGeneratorRequest fileToGenerate
-                     * @property {string|null} [parameter] CodeGeneratorRequest parameter
-                     * @property {Array.<google.protobuf.IFileDescriptorProto>|null} [protoFile] CodeGeneratorRequest protoFile
-                     * @property {google.protobuf.compiler.IVersion|null} [compilerVersion] CodeGeneratorRequest compilerVersion
-                     */
-    
-                    /**
-                     * Constructs a new CodeGeneratorRequest.
-                     * @memberof google.protobuf.compiler
-                     * @classdesc Represents a CodeGeneratorRequest.
-                     * @implements ICodeGeneratorRequest
-                     * @constructor
-                     * @param {google.protobuf.compiler.ICodeGeneratorRequest=} [properties] Properties to set
-                     */
-                    function CodeGeneratorRequest(properties) {
-                        this.fileToGenerate = [];
-                        this.protoFile = [];
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-    
-                    /**
-                     * CodeGeneratorRequest fileToGenerate.
-                     * @member {Array.<string>} fileToGenerate
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @instance
-                     */
-                    CodeGeneratorRequest.prototype.fileToGenerate = $util.emptyArray;
-    
-                    /**
-                     * CodeGeneratorRequest parameter.
-                     * @member {string} parameter
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @instance
-                     */
-                    CodeGeneratorRequest.prototype.parameter = "";
-    
-                    /**
-                     * CodeGeneratorRequest protoFile.
-                     * @member {Array.<google.protobuf.IFileDescriptorProto>} protoFile
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @instance
-                     */
-                    CodeGeneratorRequest.prototype.protoFile = $util.emptyArray;
-    
-                    /**
-                     * CodeGeneratorRequest compilerVersion.
-                     * @member {google.protobuf.compiler.IVersion|null|undefined} compilerVersion
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @instance
-                     */
-                    CodeGeneratorRequest.prototype.compilerVersion = null;
-    
-                    /**
-                     * Creates a new CodeGeneratorRequest instance using the specified properties.
-                     * @function create
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @static
-                     * @param {google.protobuf.compiler.ICodeGeneratorRequest=} [properties] Properties to set
-                     * @returns {google.protobuf.compiler.CodeGeneratorRequest} CodeGeneratorRequest instance
-                     */
-                    CodeGeneratorRequest.create = function create(properties) {
-                        return new CodeGeneratorRequest(properties);
-                    };
-    
-                    /**
-                     * Encodes the specified CodeGeneratorRequest message. Does not implicitly {@link google.protobuf.compiler.CodeGeneratorRequest.verify|verify} messages.
-                     * @function encode
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @static
-                     * @param {google.protobuf.compiler.ICodeGeneratorRequest} message CodeGeneratorRequest message or plain object to encode
-                     * @param {$protobuf.Writer} [writer] Writer to encode to
-                     * @returns {$protobuf.Writer} Writer
-                     */
-                    CodeGeneratorRequest.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.fileToGenerate != null && message.fileToGenerate.length)
-                            for (var i = 0; i < message.fileToGenerate.length; ++i)
-                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.fileToGenerate[i]);
-                        if (message.parameter != null && message.hasOwnProperty("parameter"))
-                            writer.uint32(/* id 2, wireType 2 =*/18).string(message.parameter);
-                        if (message.compilerVersion != null && message.hasOwnProperty("compilerVersion"))
-                            $root.google.protobuf.compiler.Version.encode(message.compilerVersion, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-                        if (message.protoFile != null && message.protoFile.length)
-                            for (var i = 0; i < message.protoFile.length; ++i)
-                                $root.google.protobuf.FileDescriptorProto.encode(message.protoFile[i], writer.uint32(/* id 15, wireType 2 =*/122).fork()).ldelim();
-                        return writer;
-                    };
-    
-                    /**
-                     * Encodes the specified CodeGeneratorRequest message, length delimited. Does not implicitly {@link google.protobuf.compiler.CodeGeneratorRequest.verify|verify} messages.
-                     * @function encodeDelimited
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @static
-                     * @param {google.protobuf.compiler.ICodeGeneratorRequest} message CodeGeneratorRequest message or plain object to encode
-                     * @param {$protobuf.Writer} [writer] Writer to encode to
-                     * @returns {$protobuf.Writer} Writer
-                     */
-                    CodeGeneratorRequest.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-    
-                    /**
-                     * Decodes a CodeGeneratorRequest message from the specified reader or buffer.
-                     * @function decode
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @static
-                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @param {number} [length] Message length if known beforehand
-                     * @returns {google.protobuf.compiler.CodeGeneratorRequest} CodeGeneratorRequest
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    CodeGeneratorRequest.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.compiler.CodeGeneratorRequest();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                if (!(message.fileToGenerate && message.fileToGenerate.length))
-                                    message.fileToGenerate = [];
-                                message.fileToGenerate.push(reader.string());
-                                break;
-                            case 2:
-                                message.parameter = reader.string();
-                                break;
-                            case 15:
-                                if (!(message.protoFile && message.protoFile.length))
-                                    message.protoFile = [];
-                                message.protoFile.push($root.google.protobuf.FileDescriptorProto.decode(reader, reader.uint32()));
-                                break;
-                            case 3:
-                                message.compilerVersion = $root.google.protobuf.compiler.Version.decode(reader, reader.uint32());
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-    
-                    /**
-                     * Decodes a CodeGeneratorRequest message from the specified reader or buffer, length delimited.
-                     * @function decodeDelimited
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @static
-                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @returns {google.protobuf.compiler.CodeGeneratorRequest} CodeGeneratorRequest
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    CodeGeneratorRequest.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-    
-                    /**
-                     * Verifies a CodeGeneratorRequest message.
-                     * @function verify
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @static
-                     * @param {Object.<string,*>} message Plain object to verify
-                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                     */
-                    CodeGeneratorRequest.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.fileToGenerate != null && message.hasOwnProperty("fileToGenerate")) {
-                            if (!Array.isArray(message.fileToGenerate))
-                                return "fileToGenerate: array expected";
-                            for (var i = 0; i < message.fileToGenerate.length; ++i)
-                                if (!$util.isString(message.fileToGenerate[i]))
-                                    return "fileToGenerate: string[] expected";
-                        }
-                        if (message.parameter != null && message.hasOwnProperty("parameter"))
-                            if (!$util.isString(message.parameter))
-                                return "parameter: string expected";
-                        if (message.protoFile != null && message.hasOwnProperty("protoFile")) {
-                            if (!Array.isArray(message.protoFile))
-                                return "protoFile: array expected";
-                            for (var i = 0; i < message.protoFile.length; ++i) {
-                                var error = $root.google.protobuf.FileDescriptorProto.verify(message.protoFile[i]);
-                                if (error)
-                                    return "protoFile." + error;
-                            }
-                        }
-                        if (message.compilerVersion != null && message.hasOwnProperty("compilerVersion")) {
-                            var error = $root.google.protobuf.compiler.Version.verify(message.compilerVersion);
-                            if (error)
-                                return "compilerVersion." + error;
-                        }
-                        return null;
-                    };
-    
-                    /**
-                     * Creates a CodeGeneratorRequest message from a plain object. Also converts values to their respective internal types.
-                     * @function fromObject
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @static
-                     * @param {Object.<string,*>} object Plain object
-                     * @returns {google.protobuf.compiler.CodeGeneratorRequest} CodeGeneratorRequest
-                     */
-                    CodeGeneratorRequest.fromObject = function fromObject(object) {
-                        if (object instanceof $root.google.protobuf.compiler.CodeGeneratorRequest)
-                            return object;
-                        var message = new $root.google.protobuf.compiler.CodeGeneratorRequest();
-                        if (object.fileToGenerate) {
-                            if (!Array.isArray(object.fileToGenerate))
-                                throw TypeError(".google.protobuf.compiler.CodeGeneratorRequest.fileToGenerate: array expected");
-                            message.fileToGenerate = [];
-                            for (var i = 0; i < object.fileToGenerate.length; ++i)
-                                message.fileToGenerate[i] = String(object.fileToGenerate[i]);
-                        }
-                        if (object.parameter != null)
-                            message.parameter = String(object.parameter);
-                        if (object.protoFile) {
-                            if (!Array.isArray(object.protoFile))
-                                throw TypeError(".google.protobuf.compiler.CodeGeneratorRequest.protoFile: array expected");
-                            message.protoFile = [];
-                            for (var i = 0; i < object.protoFile.length; ++i) {
-                                if (typeof object.protoFile[i] !== "object")
-                                    throw TypeError(".google.protobuf.compiler.CodeGeneratorRequest.protoFile: object expected");
-                                message.protoFile[i] = $root.google.protobuf.FileDescriptorProto.fromObject(object.protoFile[i]);
-                            }
-                        }
-                        if (object.compilerVersion != null) {
-                            if (typeof object.compilerVersion !== "object")
-                                throw TypeError(".google.protobuf.compiler.CodeGeneratorRequest.compilerVersion: object expected");
-                            message.compilerVersion = $root.google.protobuf.compiler.Version.fromObject(object.compilerVersion);
-                        }
-                        return message;
-                    };
-    
-                    /**
-                     * Creates a plain object from a CodeGeneratorRequest message. Also converts values to other types if specified.
-                     * @function toObject
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @static
-                     * @param {google.protobuf.compiler.CodeGeneratorRequest} message CodeGeneratorRequest
-                     * @param {$protobuf.IConversionOptions} [options] Conversion options
-                     * @returns {Object.<string,*>} Plain object
-                     */
-                    CodeGeneratorRequest.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.arrays || options.defaults) {
-                            object.fileToGenerate = [];
-                            object.protoFile = [];
-                        }
-                        if (options.defaults) {
-                            object.parameter = "";
-                            object.compilerVersion = null;
-                        }
-                        if (message.fileToGenerate && message.fileToGenerate.length) {
-                            object.fileToGenerate = [];
-                            for (var j = 0; j < message.fileToGenerate.length; ++j)
-                                object.fileToGenerate[j] = message.fileToGenerate[j];
-                        }
-                        if (message.parameter != null && message.hasOwnProperty("parameter"))
-                            object.parameter = message.parameter;
-                        if (message.compilerVersion != null && message.hasOwnProperty("compilerVersion"))
-                            object.compilerVersion = $root.google.protobuf.compiler.Version.toObject(message.compilerVersion, options);
-                        if (message.protoFile && message.protoFile.length) {
-                            object.protoFile = [];
-                            for (var j = 0; j < message.protoFile.length; ++j)
-                                object.protoFile[j] = $root.google.protobuf.FileDescriptorProto.toObject(message.protoFile[j], options);
-                        }
-                        return object;
-                    };
-    
-                    /**
-                     * Converts this CodeGeneratorRequest to JSON.
-                     * @function toJSON
-                     * @memberof google.protobuf.compiler.CodeGeneratorRequest
-                     * @instance
-                     * @returns {Object.<string,*>} JSON object
-                     */
-                    CodeGeneratorRequest.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-    
-                    return CodeGeneratorRequest;
-                })();
-    
-                compiler.CodeGeneratorResponse = (function() {
-    
-                    /**
-                     * Properties of a CodeGeneratorResponse.
-                     * @memberof google.protobuf.compiler
-                     * @interface ICodeGeneratorResponse
-                     * @property {string|null} [error] CodeGeneratorResponse error
-                     * @property {Array.<google.protobuf.compiler.CodeGeneratorResponse.IFile>|null} [file] CodeGeneratorResponse file
-                     */
-    
-                    /**
-                     * Constructs a new CodeGeneratorResponse.
-                     * @memberof google.protobuf.compiler
-                     * @classdesc Represents a CodeGeneratorResponse.
-                     * @implements ICodeGeneratorResponse
-                     * @constructor
-                     * @param {google.protobuf.compiler.ICodeGeneratorResponse=} [properties] Properties to set
-                     */
-                    function CodeGeneratorResponse(properties) {
-                        this.file = [];
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-    
-                    /**
-                     * CodeGeneratorResponse error.
-                     * @member {string} error
-                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                     * @instance
-                     */
-                    CodeGeneratorResponse.prototype.error = "";
-    
-                    /**
-                     * CodeGeneratorResponse file.
-                     * @member {Array.<google.protobuf.compiler.CodeGeneratorResponse.IFile>} file
-                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                     * @instance
-                     */
-                    CodeGeneratorResponse.prototype.file = $util.emptyArray;
-    
-                    /**
-                     * Creates a new CodeGeneratorResponse instance using the specified properties.
-                     * @function create
-                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                     * @static
-                     * @param {google.protobuf.compiler.ICodeGeneratorResponse=} [properties] Properties to set
-                     * @returns {google.protobuf.compiler.CodeGeneratorResponse} CodeGeneratorResponse instance
-                     */
-                    CodeGeneratorResponse.create = function create(properties) {
-                        return new CodeGeneratorResponse(properties);
-                    };
-    
-                    /**
-                     * Encodes the specified CodeGeneratorResponse message. Does not implicitly {@link google.protobuf.compiler.CodeGeneratorResponse.verify|verify} messages.
-                     * @function encode
-                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                     * @static
-                     * @param {google.protobuf.compiler.ICodeGeneratorResponse} message CodeGeneratorResponse message or plain object to encode
-                     * @param {$protobuf.Writer} [writer] Writer to encode to
-                     * @returns {$protobuf.Writer} Writer
-                     */
-                    CodeGeneratorResponse.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.error != null && message.hasOwnProperty("error"))
-                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.error);
-                        if (message.file != null && message.file.length)
-                            for (var i = 0; i < message.file.length; ++i)
-                                $root.google.protobuf.compiler.CodeGeneratorResponse.File.encode(message.file[i], writer.uint32(/* id 15, wireType 2 =*/122).fork()).ldelim();
-                        return writer;
-                    };
-    
-                    /**
-                     * Encodes the specified CodeGeneratorResponse message, length delimited. Does not implicitly {@link google.protobuf.compiler.CodeGeneratorResponse.verify|verify} messages.
-                     * @function encodeDelimited
-                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                     * @static
-                     * @param {google.protobuf.compiler.ICodeGeneratorResponse} message CodeGeneratorResponse message or plain object to encode
-                     * @param {$protobuf.Writer} [writer] Writer to encode to
-                     * @returns {$protobuf.Writer} Writer
-                     */
-                    CodeGeneratorResponse.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-    
-                    /**
-                     * Decodes a CodeGeneratorResponse message from the specified reader or buffer.
-                     * @function decode
-                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                     * @static
-                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @param {number} [length] Message length if known beforehand
-                     * @returns {google.protobuf.compiler.CodeGeneratorResponse} CodeGeneratorResponse
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    CodeGeneratorResponse.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.compiler.CodeGeneratorResponse();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.error = reader.string();
-                                break;
-                            case 15:
-                                if (!(message.file && message.file.length))
-                                    message.file = [];
-                                message.file.push($root.google.protobuf.compiler.CodeGeneratorResponse.File.decode(reader, reader.uint32()));
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-    
-                    /**
-                     * Decodes a CodeGeneratorResponse message from the specified reader or buffer, length delimited.
-                     * @function decodeDelimited
-                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                     * @static
-                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @returns {google.protobuf.compiler.CodeGeneratorResponse} CodeGeneratorResponse
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    CodeGeneratorResponse.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-    
-                    /**
-                     * Verifies a CodeGeneratorResponse message.
-                     * @function verify
-                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                     * @static
-                     * @param {Object.<string,*>} message Plain object to verify
-                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                     */
-                    CodeGeneratorResponse.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.error != null && message.hasOwnProperty("error"))
-                            if (!$util.isString(message.error))
-                                return "error: string expected";
-                        if (message.file != null && message.hasOwnProperty("file")) {
-                            if (!Array.isArray(message.file))
-                                return "file: array expected";
-                            for (var i = 0; i < message.file.length; ++i) {
-                                var error = $root.google.protobuf.compiler.CodeGeneratorResponse.File.verify(message.file[i]);
-                                if (error)
-                                    return "file." + error;
-                            }
-                        }
-                        return null;
-                    };
-    
-                    /**
-                     * Creates a CodeGeneratorResponse message from a plain object. Also converts values to their respective internal types.
-                     * @function fromObject
-                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                     * @static
-                     * @param {Object.<string,*>} object Plain object
-                     * @returns {google.protobuf.compiler.CodeGeneratorResponse} CodeGeneratorResponse
-                     */
-                    CodeGeneratorResponse.fromObject = function fromObject(object) {
-                        if (object instanceof $root.google.protobuf.compiler.CodeGeneratorResponse)
-                            return object;
-                        var message = new $root.google.protobuf.compiler.CodeGeneratorResponse();
-                        if (object.error != null)
-                            message.error = String(object.error);
-                        if (object.file) {
-                            if (!Array.isArray(object.file))
-                                throw TypeError(".google.protobuf.compiler.CodeGeneratorResponse.file: array expected");
-                            message.file = [];
-                            for (var i = 0; i < object.file.length; ++i) {
-                                if (typeof object.file[i] !== "object")
-                                    throw TypeError(".google.protobuf.compiler.CodeGeneratorResponse.file: object expected");
-                                message.file[i] = $root.google.protobuf.compiler.CodeGeneratorResponse.File.fromObject(object.file[i]);
-                            }
-                        }
-                        return message;
-                    };
-    
-                    /**
-                     * Creates a plain object from a CodeGeneratorResponse message. Also converts values to other types if specified.
-                     * @function toObject
-                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                     * @static
-                     * @param {google.protobuf.compiler.CodeGeneratorResponse} message CodeGeneratorResponse
-                     * @param {$protobuf.IConversionOptions} [options] Conversion options
-                     * @returns {Object.<string,*>} Plain object
-                     */
-                    CodeGeneratorResponse.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.arrays || options.defaults)
-                            object.file = [];
-                        if (options.defaults)
-                            object.error = "";
-                        if (message.error != null && message.hasOwnProperty("error"))
-                            object.error = message.error;
-                        if (message.file && message.file.length) {
-                            object.file = [];
-                            for (var j = 0; j < message.file.length; ++j)
-                                object.file[j] = $root.google.protobuf.compiler.CodeGeneratorResponse.File.toObject(message.file[j], options);
-                        }
-                        return object;
-                    };
-    
-                    /**
-                     * Converts this CodeGeneratorResponse to JSON.
-                     * @function toJSON
-                     * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                     * @instance
-                     * @returns {Object.<string,*>} JSON object
-                     */
-                    CodeGeneratorResponse.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-    
-                    CodeGeneratorResponse.File = (function() {
-    
-                        /**
-                         * Properties of a File.
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                         * @interface IFile
-                         * @property {string|null} [name] File name
-                         * @property {string|null} [insertionPoint] File insertionPoint
-                         * @property {string|null} [content] File content
-                         */
-    
-                        /**
-                         * Constructs a new File.
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse
-                         * @classdesc Represents a File.
-                         * @implements IFile
-                         * @constructor
-                         * @param {google.protobuf.compiler.CodeGeneratorResponse.IFile=} [properties] Properties to set
-                         */
-                        function File(properties) {
-                            if (properties)
-                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                    if (properties[keys[i]] != null)
-                                        this[keys[i]] = properties[keys[i]];
-                        }
-    
-                        /**
-                         * File name.
-                         * @member {string} name
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
-                         * @instance
-                         */
-                        File.prototype.name = "";
-    
-                        /**
-                         * File insertionPoint.
-                         * @member {string} insertionPoint
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
-                         * @instance
-                         */
-                        File.prototype.insertionPoint = "";
-    
-                        /**
-                         * File content.
-                         * @member {string} content
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
-                         * @instance
-                         */
-                        File.prototype.content = "";
-    
-                        /**
-                         * Creates a new File instance using the specified properties.
-                         * @function create
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
-                         * @static
-                         * @param {google.protobuf.compiler.CodeGeneratorResponse.IFile=} [properties] Properties to set
-                         * @returns {google.protobuf.compiler.CodeGeneratorResponse.File} File instance
-                         */
-                        File.create = function create(properties) {
-                            return new File(properties);
-                        };
-    
-                        /**
-                         * Encodes the specified File message. Does not implicitly {@link google.protobuf.compiler.CodeGeneratorResponse.File.verify|verify} messages.
-                         * @function encode
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
-                         * @static
-                         * @param {google.protobuf.compiler.CodeGeneratorResponse.IFile} message File message or plain object to encode
-                         * @param {$protobuf.Writer} [writer] Writer to encode to
-                         * @returns {$protobuf.Writer} Writer
-                         */
-                        File.encode = function encode(message, writer) {
-                            if (!writer)
-                                writer = $Writer.create();
-                            if (message.name != null && message.hasOwnProperty("name"))
-                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
-                            if (message.insertionPoint != null && message.hasOwnProperty("insertionPoint"))
-                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.insertionPoint);
-                            if (message.content != null && message.hasOwnProperty("content"))
-                                writer.uint32(/* id 15, wireType 2 =*/122).string(message.content);
-                            return writer;
-                        };
-    
-                        /**
-                         * Encodes the specified File message, length delimited. Does not implicitly {@link google.protobuf.compiler.CodeGeneratorResponse.File.verify|verify} messages.
-                         * @function encodeDelimited
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
-                         * @static
-                         * @param {google.protobuf.compiler.CodeGeneratorResponse.IFile} message File message or plain object to encode
-                         * @param {$protobuf.Writer} [writer] Writer to encode to
-                         * @returns {$protobuf.Writer} Writer
-                         */
-                        File.encodeDelimited = function encodeDelimited(message, writer) {
-                            return this.encode(message, writer).ldelim();
-                        };
-    
-                        /**
-                         * Decodes a File message from the specified reader or buffer.
-                         * @function decode
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
-                         * @static
-                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                         * @param {number} [length] Message length if known beforehand
-                         * @returns {google.protobuf.compiler.CodeGeneratorResponse.File} File
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        File.decode = function decode(reader, length) {
-                            if (!(reader instanceof $Reader))
-                                reader = $Reader.create(reader);
-                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.compiler.CodeGeneratorResponse.File();
-                            while (reader.pos < end) {
-                                var tag = reader.uint32();
-                                switch (tag >>> 3) {
-                                case 1:
-                                    message.name = reader.string();
-                                    break;
-                                case 2:
-                                    message.insertionPoint = reader.string();
-                                    break;
-                                case 15:
-                                    message.content = reader.string();
-                                    break;
-                                default:
-                                    reader.skipType(tag & 7);
-                                    break;
-                                }
-                            }
-                            return message;
-                        };
-    
-                        /**
-                         * Decodes a File message from the specified reader or buffer, length delimited.
-                         * @function decodeDelimited
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
-                         * @static
-                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                         * @returns {google.protobuf.compiler.CodeGeneratorResponse.File} File
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        File.decodeDelimited = function decodeDelimited(reader) {
-                            if (!(reader instanceof $Reader))
-                                reader = new $Reader(reader);
-                            return this.decode(reader, reader.uint32());
-                        };
-    
-                        /**
-                         * Verifies a File message.
-                         * @function verify
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
-                         * @static
-                         * @param {Object.<string,*>} message Plain object to verify
-                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                         */
-                        File.verify = function verify(message) {
-                            if (typeof message !== "object" || message === null)
-                                return "object expected";
-                            if (message.name != null && message.hasOwnProperty("name"))
-                                if (!$util.isString(message.name))
-                                    return "name: string expected";
-                            if (message.insertionPoint != null && message.hasOwnProperty("insertionPoint"))
-                                if (!$util.isString(message.insertionPoint))
-                                    return "insertionPoint: string expected";
-                            if (message.content != null && message.hasOwnProperty("content"))
-                                if (!$util.isString(message.content))
-                                    return "content: string expected";
-                            return null;
-                        };
-    
-                        /**
-                         * Creates a File message from a plain object. Also converts values to their respective internal types.
-                         * @function fromObject
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
-                         * @static
-                         * @param {Object.<string,*>} object Plain object
-                         * @returns {google.protobuf.compiler.CodeGeneratorResponse.File} File
-                         */
-                        File.fromObject = function fromObject(object) {
-                            if (object instanceof $root.google.protobuf.compiler.CodeGeneratorResponse.File)
-                                return object;
-                            var message = new $root.google.protobuf.compiler.CodeGeneratorResponse.File();
-                            if (object.name != null)
-                                message.name = String(object.name);
-                            if (object.insertionPoint != null)
-                                message.insertionPoint = String(object.insertionPoint);
-                            if (object.content != null)
-                                message.content = String(object.content);
-                            return message;
-                        };
-    
-                        /**
-                         * Creates a plain object from a File message. Also converts values to other types if specified.
-                         * @function toObject
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
-                         * @static
-                         * @param {google.protobuf.compiler.CodeGeneratorResponse.File} message File
-                         * @param {$protobuf.IConversionOptions} [options] Conversion options
-                         * @returns {Object.<string,*>} Plain object
-                         */
-                        File.toObject = function toObject(message, options) {
-                            if (!options)
-                                options = {};
-                            var object = {};
-                            if (options.defaults) {
-                                object.name = "";
-                                object.insertionPoint = "";
-                                object.content = "";
-                            }
-                            if (message.name != null && message.hasOwnProperty("name"))
-                                object.name = message.name;
-                            if (message.insertionPoint != null && message.hasOwnProperty("insertionPoint"))
-                                object.insertionPoint = message.insertionPoint;
-                            if (message.content != null && message.hasOwnProperty("content"))
-                                object.content = message.content;
-                            return object;
-                        };
-    
-                        /**
-                         * Converts this File to JSON.
-                         * @function toJSON
-                         * @memberof google.protobuf.compiler.CodeGeneratorResponse.File
-                         * @instance
-                         * @returns {Object.<string,*>} JSON object
-                         */
-                        File.prototype.toJSON = function toJSON() {
-                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                        };
-    
-                        return File;
-                    })();
-    
-                    return CodeGeneratorResponse;
-                })();
-    
-                return compiler;
             })();
     
             return protobuf;

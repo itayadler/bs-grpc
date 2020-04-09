@@ -438,10 +438,14 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
           const name = method.name
           const inputType = mapMessageType(method.inputType)
           const outputType = mapMessageType(method.outputType)
+          const clientStreaming = method.clientStreaming
+          const serverStreaming = method.serverStreaming
           return {
             name,
             inputType,
-            outputType
+            outputType,
+            clientStreaming,
+            serverStreaming,
           }
         })
       }
@@ -728,6 +732,8 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
             type inputType = ${inputType};
             /** the output/reply type of the ${rpc.name} RPC */
             type outputType = ${outputType};
+            let clientStreaming = ${rpc.clientStreaming};
+            let serverStreaming = ${rpc.serverStreaming};
             /** the type of the object from which rpc implementations may
              * obtain request payload and metadata. an object of this type is
              * passed to your rpc implementation. */
