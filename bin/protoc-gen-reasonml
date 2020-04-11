@@ -1,16 +1,6 @@
 #!/usr/bin/env node
-/* Why is protobufjs giving me JS Number values to represent protobufs
- * enum values when grpc gives me JS String values?
- *
- * https://github.com/dcodeIO/protobuf.js/issues/97
- */
-const pbjs = require('protobufjs')
-const protobufs = require('../src/protobufs')
-const Path = require('path')
-const fs = require('fs')
-const util = require('util')
-const toposort = require('toposort')
 
+<<<<<<< HEAD
 const quote = s => {
   if ('string' !== typeof s)
     throw new Error("expecting string")
@@ -525,11 +515,19 @@ function someEnumFields(fields) { return fields.some(isEnumField) }
 /* make function names for converting between protobufjs' representation of values of enums and bs-grpc's representation */
 function makeFunNameConvEnumOfInt(enumModuleRef) { return `${upper1(enumModuleRef)}.${lower1(enumModuleRef)}OfInt` }
 function makeFunNameConvIntOfEnum(enumModuleRef) { return `${upper1(enumModuleRef)}.intOf${upper1(enumModuleRef)}` }
+=======
+const protobufs = require('../gen/protobufs')
+const { getRootModule } = require('../src/codegen/parser/get_root_module');
+const { getModuleDependencies } = require('../src/codegen/parser/get_module_dependencies');
+const { emitServerModule } = require('../src/codegen/server');
+const { emitModule } = require('../src/codegen/module');
+const { emitGrpc } = require('../src/codegen/grpc');
+const { emitClient } = require('../src/codegen/client');
+>>>>>>> refactor protoc-gen-reasonml to files
 
 require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
-  let protoHandleFields = ''
-  const reader = pbjs.Reader.create(buf)
   const req = protobufs.google.protobuf.compiler.CodeGeneratorRequest.decode(buf)
+<<<<<<< HEAD
   //console.error(util.inspect(req, {depth:999}))
 
   // XXX deleting noise garbage i don't want to see
@@ -1214,16 +1212,23 @@ require('read-all-stream')(process.stdin, { encoding: null }).then(buf => {
     }
     return code
   }
+=======
+  const rootModule = getRootModule(req.protoFile)
+  const moduleDeps = getModuleDependencies(rootModule)
+  const moduleCode = emitModule(rootModule, moduleDeps, rootModule.packageName)
+  const serverModuleCode = emitServerModule(rootModule)
+>>>>>>> refactor protoc-gen-reasonml to files
 
-  const moduleMeat = emitModule(rootModule)
+  const grpcModuleCode = emitGrpc()
+  const clientModuleCode = emitClient()
 
-  const emission = FILE_MAGIC
-    + preBoilerPlate
-    + boilerPlate
-    + moduleMeat
-    + boilerPlate2
+  const emission = grpcModuleCode
+    + moduleCode
+    + serverModuleCode
+    + clientModuleCode
 
   if (process.stdout.isTTY) {
+    const util = require('util')
     console.log('stdout is a TTY; printing human-readable data')
     console.log('output module tree:', util.inspect(rootModule, { depth: 99 }))
     console.log('output source code:')
