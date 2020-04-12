@@ -2,8 +2,8 @@ let lastMessage = ref("out of the silent planet comes a message");
 let credentials = Grpc.Server.Credentials.Insecure.make();
 let chatService =
   Grpc.Chat.ChatService.t(~sendMessage=(call, callback) => {
-    let request = call |> Grpc.Chat.ChatService.SendMessageRpc.request;
-    let message = request |> Grpc.Chat.Message.message;
+    let request = call |> Grpc.Chat.ChatService.SendMessageRpc.requestGet;
+    let message = request |> Grpc.Chat.Message.messageGet;
     let replyMessage = lastMessage^;
     switch (message) {
     | None => ()

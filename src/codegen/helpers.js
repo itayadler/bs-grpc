@@ -99,6 +99,7 @@ const quote = s => {
 }
 
 const moduleDirName = moduleName => moduleName.split('.').slice(0, -1).join('.');
+const makeConstructorName = s => s;
 
 exports.enumName = enumName;
 exports.isEnumField = isEnumField;
@@ -110,6 +111,7 @@ exports.dottedModuleName = dottedModuleName;
 exports.joinModuleName = joinModuleName;
 exports.lastDottedPart = lastDottedPart;
 exports.lower1 = lower1;
+exports.makeConstructorName = makeConstructorName;
 exports.mapEnumValues = mapEnumValues;
 exports.mapJustType = mapJustType;
 exports.mapMessageType = mapMessageType;

@@ -1,6 +1,6 @@
 const { upper1, lower1, lastDottedPart, mapTypeForMessageField, someEnumFields,
   resolveRelative, mapTypeNameToModuleName, makeFunNameConvIntOfEnum, makeFunNameConvEnumOfInt,
-  mapJustType, makeConstructorName, quote } = require('./helpers');
+  mapJustType, makeConstructorName, quote, isEnumField } = require('./helpers');
 
 function emitModule(module, moduleDeps, rootModulePackageName) {
   let code = ''
@@ -98,8 +98,10 @@ function emitModuleTypes(module) {
           if (isEnumField(field)) {
             const enumModuleRef = resolveRelative(mapTypeNameToModuleName(field.typeName), module.moduleName)
             const conv = makeFunNameConvIntOfEnum(enumModuleRef)
-            code += `~${lower1(field.name)} =? (`
-            code += `@@ ${conv}) @@ ${lower1(field.name)},\n`
+            code += `~${lower1(field.name)} =? ${lower1(field.name)} |. Belt.Option.map(${conv}),\n`
+
+            // code += `~${lower1(field.name)} =? (`
+            // code += `@@ ${conv}) @@ ${lower1(field.name)},\n`
           } else {
             code += `~${lower1(field.name)}?,\n`
           }
@@ -109,11 +111,7 @@ function emitModuleTypes(module) {
           if (isEnumField(field)) {
             const enumModuleRef = resolveRelative(mapTypeNameToModuleName(field.typeName), module.moduleName)
             const conv = makeFunNameConvEnumOfInt(enumModuleRef)
-            code += `/* enum converting getter */
-                let ${field.name}Get =
-              `
-            code += `@@ ${conv} << ${field.name}Get;
-              `
+            code += `let ${field.name} = x => x |. ${field.name}Get |. Belt.Option.map(${conv});\n`
           }
         })
       }

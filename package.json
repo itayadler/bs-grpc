@@ -1,18 +1,23 @@
 {
-  "name": "bs-grpc",
-  "version": "0.13.7",
+  "name": "@itayad/bs-grpc",
+  "description": "gRPC code generator for ReasonML (Fork of bs-grpc)",
+  "version": "0.1.0",
   "scripts": {
     "clean": "bsb -clean-world",
     "build": "npm run compile-static-protobuf-compiler-protobufs",
     "watch": "bsb -make-world -w",
     "prepublishOnly": "npm run compile-static-protobuf-compiler-protobufs",
     "compile-static-protobuf-compiler-protobufs": "./node_modules/.bin/pbjs -t static-module -p node_modules/grpc-tools/bin/google/protobuf node_modules/grpc-tools/bin/google/protobuf/compiler/plugin.proto > gen/protobufs.js",
-    "compile-static-reasonml-bindings": "PATH=\"./bin:$PATH\" ./node_modules/.bin/grpc_tools_node_protoc gen/search.proto --reasonml_out=gen"
+    "compile-static-reasonml-bindings": "PATH=\"./bin:$PATH\" ./node_modules/.bin/grpc_tools_node_protoc example/hello.proto --reasonml_out=gen"
   },
   "keywords": [
+    "ReasonML",
+    "gRPC",
+    "Protobuf",
+    "RX",
     "BuckleScript"
   ],
-  "author": "\"Don Viszneki\" <dviszneki@influential.co>",
+  "author": "\"Itay Adler\" @itayad",
   "bin": {
     "protoc-gen-reasonml": "bin/protoc-gen-reasonml",
     "reasonml-compile-proto": "bin/reasonml-compile-proto"

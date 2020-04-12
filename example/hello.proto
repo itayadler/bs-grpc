@@ -7,13 +7,17 @@ enum Mood {
   FRIENDLY = 0;
   COOL = 1;
 }
+enum PsyPlane {
+  ASTRAL_PLANE = 0;
+  CYBER_PLANE = 1;
+}
+message Personality {
+  string name = 1;
+}
+message Person {
+  repeated Personality personality = 1;
+}
 message HelloRequest {
-  message Person {
-    message Personality {
-      string name = 1;
-    }
-    repeated Personality personality = 1;
-  }
   Person sender = 1;
   repeated Person recipients = 2;
 }
@@ -22,10 +26,6 @@ message VerbalReply {
   Mood mood = 2;
 }
 message TelepathicReply {
-  enum PsyPlane {
-    ASTRAL_PLANE = 0;
-    CYBER_PLANE = 1;
-  }
   string thought = 1;
   PsyPlane psyPlane = 2;
 }
