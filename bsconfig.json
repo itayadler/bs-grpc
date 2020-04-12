@@ -4,6 +4,7 @@
   "sources": [
     {
       "dir": "gen",
+      "type": "dev",
       "subdirs": true
     }
   ],
@@ -12,8 +13,11 @@
     "in-source": true
   },
   "suffix": ".bs.js",
-  "bs-dependencies": [
-    "reason-promise"
+  "bs-dev-dependencies": [
+    "@ambientlight/bs-rx",
+    "reason-promise",
+    "reason-nodejs",
+    "bs-fetch"
   ],
   "warnings": {
     "error": "+101"

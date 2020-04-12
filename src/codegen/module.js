@@ -245,15 +245,40 @@ function emitModuleRpcs(module, rootModulePackageName) {
     module.rpcs.forEach(rpc => {
       const inputType = resolveRelative(rpc.inputType, module.moduleName)
       const outputType = resolveRelative(rpc.outputType, module.moduleName)
-      code += `
+      if (rpc.serverStreaming) {
+        code += `
           module ${upper1(rpc.name)}Rpc {
             /* Rpc module */
             /** the input/request type of the ${rpc.name} RPC */
             type inputType = ${inputType};
             /** the output/reply type of the ${rpc.name} RPC */
             type outputType = ${outputType};
-            let clientStreaming = ${rpc.clientStreaming};
-            let serverStreaming = ${rpc.serverStreaming};
+            /** the type of the object from which rpc implementations may
+             * obtain request payload and metadata. an object of this type is
+             * passed to your rpc implementation. */
+            type call = {
+              .
+              "request": inputType,
+              "write": [@bs.meth] (outputType => unit),
+              "emit": [@bs.meth] ((string, Js.Promise.error) => unit),
+              "end__": [@bs.meth] [@bs.as "end"] (unit => unit),
+            };
+            /** server implementation function type. request payload and
+                   * metadata can be obtained via the \`call\` argument furnished to
+                   * your rpc implementation. the second argument allows you to
+                   * furnish a reply, although three of its four arguments should be
+                   * unused. */
+            type t = call => Rx.Observable.t(outputType);
+          };
+        `
+      } else {
+        code += `
+          module ${upper1(rpc.name)}Rpc {
+            /* Rpc module */
+            /** the input/request type of the ${rpc.name} RPC */
+            type inputType = ${inputType};
+            /** the output/reply type of the ${rpc.name} RPC */
+            type outputType = ${outputType};
             /** the type of the object from which rpc implementations may
              * obtain request payload and metadata. an object of this type is
              * passed to your rpc implementation. */
@@ -278,6 +303,8 @@ function emitModuleRpcs(module, rootModulePackageName) {
             |}];
           };
         `
+
+      }
     })
     code += `
         /** objects of this type are actually grpc service client constructor
@@ -307,7 +334,39 @@ function emitModuleRpcs(module, rootModulePackageName) {
       const myModuleName = rpcModuleRef
       const inputType = rpcModuleRef + '.inputType'
       const outputType = rpcModuleRef + '.outputType'
-      code += `
+      if (rpc.clientStreaming) {
+        code += `
+        module ${myModuleName} = {
+          [@bs.send]
+          external invokeStream:
+            (t, ${inputType}) =>
+            NodeJs.Stream.Readable.t(${outputType}) = ${quote(lower1(rpc.name))};
+          /** invoke an rpc using streams */
+          let invoke = (client, input) => {
+            Rx.Observable.create(
+              ~subscribe=
+                \`NoTeardown(
+                  subscriber => {
+                    let call = invokeStream(client, input);
+                    NodeJs.Stream.onData(call, data =>
+                      subscriber |> Rx.Subscriber.next(data)
+                    );
+                    NodeJs.Stream.onError(call, error =>
+                      subscriber |> Rx.Subscriber.error(error)
+                    );
+                    NodeJs.Stream.onEnd(call, () =>
+                      subscriber |> Rx.Subscriber.complete
+                    );
+                    ();
+                  }
+                ),
+              (),
+            );
+          };
+        }
+        `
+      } else {
+        code += `
           module ${myModuleName} = {
             /** the type of the callback you must supply when you invoke an rpc */
             type callback = (maybeError, ${outputType}) => unit;
@@ -329,6 +388,7 @@ function emitModuleRpcs(module, rootModulePackageName) {
             });
           }
         `
+      }
     })
     code += `
         };
@@ -345,29 +405,75 @@ function emitModuleRpcs(module, rootModulePackageName) {
     module.rpcs.forEach(rpc => {
       code += `${lower1(rpc.name)}: ${upper1(rpc.name)}Rpc.t,\n`;
     })
-    code += `};
-        [@bs.send] external addService : (server, grpcServiceServer, t) => unit = "addService";
-        let addService = (server, t) =>
-          addService(server, myServerServiceHandle, t);
-        /** creates an implementation of the ${module.serviceName}. The RPC
-         * implementations you pass to this function will only be invoked after
-         * any sanitization/normalization code has processed the
-         * message without error. */
-        let make = (
-      `
+    code += `};`
+    code += `
+      [@bs.send] external addService : (server, grpcServiceServer, t) => unit = "addService";
+      let addService = (server, serviceFunc: t) =>
+        addService(server, myServerServiceHandle, 
+          t(
+
+    `
+    module.rpcs.forEach(rpc => {
+      if (rpc.serverStreaming) {
+        code += `
+        ~${lower1(rpc.name)}=
+        (call) => {
+          let outerCall = serviceFunc->searchGet;
+          let response = outerCall(call);
+          response
+          |> Rx.Observable.forEach(data => call##write(data))
+          |> Js.Promise.then_(() => call##end__() |> Js.Promise.resolve)
+          |> Js.Promise.catch(err => {
+               call##emit("error", err) |> Js.Promise.resolve;
+             })
+          |> ignore;
+          response;
+        }
+        `
+
+      } else {
+        code += `
+        ~${lower1(rpc.name)}=
+          (call, callback) => {
+            let outerCall = serviceFunc->${lower1(rpc.name)}Get;
+            outerCall(call, callback);
+            ();
+          }
+        `
+      }
+    })
+    code += `
+          )
+      );
+    `
+    code += `
+      /** creates an implementation of the ${module.serviceName}. The RPC
+       * implementations you pass to this function will only be invoked after
+       * any sanitization/normalization code has processed the
+       * message without error. */
+      let make = (\n`
     module.rpcs.forEach(rpc => {
       code += `~${lower1(rpc.name)},\n`;
-      code += `~_${lower1(rpc.name)}ErrorHandler,\n`;
     })
     code += `\n) => t(\n`;
     module.rpcs.forEach(rpc => {
-      code += `
+      if (rpc.serverStreaming) {
+        code += `
+                ~${lower1(rpc.name)}=
+          (call) => {
+            ${lower1(rpc.name)}(call, call##request);
+          },
+        `
+
+      } else {
+        code += `
                 ~${lower1(rpc.name)}=
           (call, callback) => {
             let request = call |. ${upper1(resolveRelative(rpc.name, module.moduleName))}Rpc.requestGet;
             ${lower1(rpc.name)}(call, request, callback);
           },
         `
+      }
     })
     code += `)\n`;
   }

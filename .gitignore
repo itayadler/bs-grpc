@@ -1,5 +1,7 @@
 *.exe
-gen
+gen/*.proto
+gen/*.re
+gen/*.bs.js
 *.obj
 *.out
 *.compile

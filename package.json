@@ -5,10 +5,9 @@
     "clean": "bsb -clean-world",
     "build": "npm run compile-static-protobuf-compiler-protobufs",
     "watch": "bsb -make-world -w",
-    "prepublish": "npm run compile-static-protobuf-compiler-protobufs",
-    "compile-static-protobuf-compiler-protobufs": "./node_modules/.bin/pbjs -t static-module -p node_modules/grpc-tools/bin/google/protobuf node_modules/grpc-tools/bin/google/protobuf/compiler/plugin.proto > src/protobufs.js",
-    "compile-static-protobuf-compiler-protobufs-with-extensions": "./node_modules/.bin/pbjs -t static-module -p node_modules/grpc-tools/bin/google/protobuf myplugin.proto > src/protobufs.js",
-    "compile-static-reasonml-bindings": "PATH=\"./bin:$PATH\" ./node_modules/.bin/grpc_tools_node_protoc search.proto --reasonml_out=gen"
+    "prepublishOnly": "npm run compile-static-protobuf-compiler-protobufs",
+    "compile-static-protobuf-compiler-protobufs": "./node_modules/.bin/pbjs -t static-module -p node_modules/grpc-tools/bin/google/protobuf node_modules/grpc-tools/bin/google/protobuf/compiler/plugin.proto > gen/protobufs.js",
+    "compile-static-reasonml-bindings": "PATH=\"./bin:$PATH\" ./node_modules/.bin/grpc_tools_node_protoc gen/search.proto --reasonml_out=gen"
   },
   "keywords": [
     "BuckleScript"
@@ -27,15 +26,20 @@
     "grpc-tools": "^1.6.6",
     "protobufjs": "6.8.9",
     "read-all-stream": "^3.1.0",
-    "reason-promise": "^1.0.2",
     "resolve": "^1.8.1",
     "toposort": "^2.0.2"
+  },
+  "devDependencies": {
+    "@ambientlight/bs-rx": "^0.2.3",
+    "bs-fetch": "^0.5.2",
+    "reason-nodejs": "github:sikanhe/reason-node#bc0679d014b9182520eaf29c7cf931c2c2479a47",
+    "reason-promise": "^1.0.2"
   },
   "files": [
     "bin/protoc-gen-reasonml",
     "bin/reasonml-compile-proto",
     "bsconfig.json",
-    "src/index.js",
-    "src/protobufs.js"
+    "gen/protobufs.js",
+    "src/index.js"
   ]
 }
