@@ -332,7 +332,7 @@ function emitModuleRpcs(module, rootModulePackageName) {
       const myModuleName = rpcModuleRef
       const inputType = rpcModuleRef + '.inputType'
       const outputType = rpcModuleRef + '.outputType'
-      if (rpc.clientStreaming) {
+      if (rpc.serverStreaming) {
         code += `
         module ${myModuleName} = {
           [@bs.send]
